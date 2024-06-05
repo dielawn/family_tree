@@ -1,9 +1,5 @@
 const Person = require('./models/person');
 
-// home or login page
-exports.home = (req, res) => {
-    res.render('index', { title: 'Welcome' });
-};
 
 
 //create
@@ -17,8 +13,14 @@ exports.create_person = async (req, res) => {
             bio_father,
             bio_mother,
         }        
-        const savedPerson = await newPerson.save();
-        res.status(201).json({ message: 'Added new person to database', id: savedPerson});
+        // check for existing person
+        const isMatch = await Person.findOne(newPerson)
+        if (isMatch) {
+            return res.status(400).json({ message: 'Person already in database' })
+        } else {
+            const savedPerson = await newPerson.save();
+            res.status(201).json({ message: 'Added new person to database', id: savedPerson });
+        }
     }  catch (error) {
         res.status(500).json({ message: `Error create person: ${error.message}` });
     }
@@ -29,7 +31,7 @@ exports.view_person = async (req, res) => {
     try {
         const person = await Person.findById(req.params.id);
         if (!person) {
-            res.status(404).json({ message: 'Person not found' });
+           return  res.status(404).json({ message: 'Person not found' });
         } else {
             res.status(200).json({ message: 'Found person', person });
         }
@@ -43,7 +45,7 @@ exports.update_person = async (req, res) => {
     try {
         const personToUpdate = await Person.findById(req.params.id)
         if (!personToUpdate) {
-            res.status(404).json({ message: 'Person not found' });
+           return res.status(404).json({ message: 'Person not found' });
         } else {
             const { first, middle, last, dob, dod, bio_father, bio_mother  } = req.body
             //get updated info or use old info
@@ -68,7 +70,7 @@ exports.delete_person = async (req, res) => {
     try {
         const person = await Person.findByIdAndDelete(req.params.id)
         if (!person) {
-            res.status(404).json({ message: 'Person not found' });
+            return res.status(404).json({ message: 'Person not found' });
         } else {
             res.status(200).json({ message: 'Person deleted successfully' })
         }
