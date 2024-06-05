@@ -1,6 +1,4 @@
-const Person = require('./models/person');
-
-
+const Person = require('../models/person');
 
 //create
 exports.create_person = async (req, res) => {
@@ -71,9 +69,8 @@ exports.delete_person = async (req, res) => {
         const person = await Person.findByIdAndDelete(req.params.id)
         if (!person) {
             return res.status(404).json({ message: 'Person not found' });
-        } else {
-            res.status(200).json({ message: 'Person deleted successfully' })
         }
+            res.status(200).json({ message: 'Person deleted successfully' })
     } catch (error) {
         res.status(500).json({ message: `Error deleting person: ${error.message}` });
     }

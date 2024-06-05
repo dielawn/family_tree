@@ -1,4 +1,4 @@
-const User = require('./models/user');
+const User = require('../models/user');
 const { body, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
@@ -94,7 +94,7 @@ exports.get_user = async (req, res) => {
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
             }
-            res.status(200).json({ message: `Welcome, ${req.user.username}`, user: req.user });
+            res.status(200).json({ message: `Welcome, ${req.user.username}`, user });
         } else {
             res.status(401).json({ message: 'Unauthorized access, please login' });
         }
@@ -107,6 +107,25 @@ exports.get_user = async (req, res) => {
 // update user
 exports.update_user = async (req, res) => {
     try {
+        const userToUpdate = await User.findById(req.params.id)
+        if (!userToUpdate) {
+            return res.status(404).json({ message: 'User not found' })
+        }
+        const { username, password } = req.body
+
+        if (username) {
+            userToUpdate.username = username
+        }
+
+        if (password) {
+            userToUpdate.password = await bcrypt.hash(password, 10)
+        }
+
+        const updatedUser = await userToUpdate.save();
+
+         // User object without password
+        const { password: _, ...userWithoutPassword } = updatedUser.toObject();
+        res.status(200).json({ message: 'User updated', user: userWithoutPassword })
 
     } catch (error) {
         res.status(500).json({ message: `Error updating user: ${error.message}` });
@@ -116,6 +135,11 @@ exports.update_user = async (req, res) => {
 //delete user
 exports.delete_user = async (req, res) => {
     try {
+        const userToDelete = await User.findByIdAndDelete(req.params.id)
+        if (!userToDelete) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.status(200).json({ message: 'User deleted successfully' });
 
     } catch (error) {
         res.status(500).json({ message: `Error deleting user: ${error.message}` });
