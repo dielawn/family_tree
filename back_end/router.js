@@ -5,7 +5,7 @@ const userController = require('./controllers/userController')
 const verifyToken = require('./middleware/authMiddleware')
 
 /* GET login page. */
-router.get('/', personController.home);
+router.get('/', userController.home);
 
         // USER STUFF //
 

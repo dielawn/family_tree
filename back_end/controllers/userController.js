@@ -84,7 +84,7 @@ exports.create_user = [
     } catch (error) {
         res.status(500).json({ message: `Error creating user: ${error.message}` });
     }
-}]
+}];
 
 // view user
 exports.get_user = async (req, res) => {
