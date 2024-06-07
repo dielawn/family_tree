@@ -4,16 +4,7 @@ import axios from "axios";
 export const NameForm = ({ first, setFirst, middle, setMiddle, last, setLast, maiden, setMaiden, common, setCommon }) => {
     const [message, setMessage] = useState('');
 
-    const handleNameForm = async () => {
-        try {
-            const personName =  { first, middle, last, maiden, common } 
-            await axios.post('/person', personName)
 
-
-        } catch (error) {
-                setMessage(`Error: ${error.message}`)
-        }
-    }
 
 
     return (

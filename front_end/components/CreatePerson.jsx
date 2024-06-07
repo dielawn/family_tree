@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NameForm } from "./NameForm";
 import axios from "axios";
 
@@ -14,6 +14,7 @@ export const CreatePersonForm = () => {
 
     // birth and death dates
     const [dob, setDob] = useState(''); 
+    const [events, setEvents] = useState([]);
     const [dod, setDod] = useState('');
 
     //parents
@@ -31,33 +32,56 @@ export const CreatePersonForm = () => {
     const [bio, setBio] = useState('');
 
 
-    const handleSubmitPerson = async () => {
+    const handleSubmitPerson = async (e) => {
+        e.preventDefault();
         try {
             const personName =  { first, middle, last, maiden, common } 
-            await axios.post('/person', personName)
+            const newPerson = {
+                personName,
+                bio,
+                dob,
+                events,
+                dod,
+                bioFather,
+                bioMother,
+                adoptedFather,
+                adoptedMother,
+                children
+            }
+            const res = await axios.post('/person', newPerson);
+            if (res.status === 201) {
+                setMessage('New person added to database')
+            }
+            setMessage(` ${res.status} Error: ${res.message}`);
 
 
         } catch (error) {
                 setMessage(`Error: ${error.message}`)
         }
-    }
+    };
+
+   
 
 
     return (
-       <div>
-        <NameForm 
-            first={first}
-            setFirst={setFirst}
-            middle={middle}
-            setMiddle={setMiddle}
-            last={last}
-            setLast={setLast}
-            maiden={maiden}
-            setMaiden={setMaiden}
-            common={common}
-            setCommon={setCommon}
-        />
-        <p>{message}</p>
-       </div>
+        <div>
+            <form onSubmit={handleSubmitPerson}>
+                <NameForm 
+                    first={first}
+                    setFirst={setFirst}
+                    middle={middle}
+                    setMiddle={setMiddle}
+                    last={last}
+                    setLast={setLast}
+                    maiden={maiden}
+                    setMaiden={setMaiden}
+                    common={common}
+                    setCommon={setCommon}
+                />
+
+                <button type="submit">Submit</button>
+            </form>             
+            <p>{message}</p>
+        </div>
     )
 }
