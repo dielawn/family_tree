@@ -3,13 +3,17 @@ const Person = require('../models/person');
 //create
 exports.create_person = async (req, res) => {
     try {
-        const { first, middle, last, dob, dod, bio_father, bio_mother  } = req.body
+        const { first, middle, last, dob, dod, bio_father, bio_mother, adopted_father, adopted_mother, children  } = req.body
         const newPerson = {
-            name: { first, middle, last },
+            name: { first, middle, last, maiden, nickname },
             dob,
             dod,
             bio_father,
             bio_mother,
+            adopted_father,
+            adopted_mother,
+            children,
+
         }        
         // check for existing person
         const isMatch = await Person.findOne(newPerson)
@@ -45,7 +49,7 @@ exports.update_person = async (req, res) => {
         if (!personToUpdate) {
            return res.status(404).json({ message: 'Person not found' });
         } else {
-            const { first, middle, last, dob, dod, bio_father, bio_mother  } = req.body
+            const { first, middle, last, dob, dod, bio_father, bio_mother, adopted_father, adopted_mother, children  } = req.body
             //get updated info or use old info
             personToUpdate.name.first = first || personToUpdate.name.first;
             personToUpdate.name.middle = middle || personToUpdate.name.middle;
@@ -54,6 +58,9 @@ exports.update_person = async (req, res) => {
             personToUpdate.dod = dod || personToUpdate.dod;
             personToUpdate.bio_father = bio_father || personToUpdate.bio_father;
             personToUpdate.bio_mother = bio_mother || personToUpdate.bio_mother;
+            personToUpdate.adopted_father = adopted_father || personToUpdate.adopted_father;
+            personToUpdate.adopted_mother = adopted_mother || personToUpdate.adopted_mother;
+            personToUpdate.children = children || personToUpdate.children;
 
             const updatedPerson = await personToUpdate.save();
             res.status(200).json({ message: 'Person updated', id: updatedPerson._id })
