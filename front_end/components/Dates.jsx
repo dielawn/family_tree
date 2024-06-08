@@ -2,22 +2,27 @@ import React, { useEffect, useState } from "react";
 
 export const DatesForm = ({ dob, setDob, events, setEvents, dod, setDod }) => {
     const [message, setMessage] = useState('');
-    const [event, setEvent] = useState('');
-    const [eventArray, setEventArray] = useState([]);
 
-    const handleNewEvent = () => {
-       if (event !== '') {
-        const tempArray = [...eventArray]
-        tempArray.push(event)
-        setEventArray(tempArray);
-        setEvent('')
-       }
-    }
-
+    const [eventDesc, setEventDesc] = useState('');
+    const [eventDate, setEventDate] = useState('');
     
+    const handleNewEvent = (e) => {
+        e.preventDefault();
+       if (eventDesc !== '' && eventDate !== '') {
+        const tempArray = [...events]
+        tempArray.push({ description: eventDesc, date: eventDate })
+        setEvents(tempArray);
+        setEventDesc('');
+        setEventDate('');
+        setMessage('Event added successfully')
+       } else {
+        setMessage('Please fill out both fields')
+       }
+    };
 
     return (
         <fieldset>
+
             <legend>Dates of interest</legend>
             <label htmlFor="dobInput">Date of birth</label>    
             <input 
@@ -35,15 +40,24 @@ export const DatesForm = ({ dob, setDob, events, setEvents, dod, setDod }) => {
                 onChange={(e) => setDod(e.target.value)}
             />
 
-            <label htmlFor="eventsInput">Event</label>
+            <label htmlFor="eventDescInput">Life event</label>
             <input 
                 type="text"
-                id="eventsInput"
-                value={event}
-                onChange={(e) => setEvent(e.target.value)}    
+                id="eventDescInput"
+                value={eventDesc}
+                onChange={(e) => setEventDesc(e.target.value)}    
             />
-            <button onClick={() => handleNewEvent()}>Add Event</button>
+            <label htmlFor="eventDateInput">Date of event</label>
+            <input 
+                type="text"
+                id="eventDateInput"
+                value={eventDate}
+                onChange={(e) => setEventDate(e.target.value)}    
+            />
+           
+            <button onClick={(e) => handleNewEvent(e)}>Add Event</button>
+            <p>{message}</p>
         
         </fieldset>
     )
-}
+};

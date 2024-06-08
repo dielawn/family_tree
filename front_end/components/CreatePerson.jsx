@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { NameForm } from "./NameForm";
 import axios from "axios";
+
+import { NameForm } from "./NameForm";
+import { DatesForm } from "./Dates";
+import { ParentsForm } from "./Parents";
+
 
 export const CreatePersonForm = () => {
 
@@ -77,6 +81,26 @@ export const CreatePersonForm = () => {
                     setMaiden={setMaiden}
                     common={common}
                     setCommon={setCommon}
+                />
+                <DatesForm 
+                    dob={dob}
+                    setDob={setDob}
+                    dod={dod}
+                    setDod={setDod}
+                    events={events}
+                    setEvents={setEvents}
+                />
+                <ParentsForm
+                    bioFather={bioFather}
+                    setBioFather={setBioFather}
+                    bioMother={bioMother}
+                    setBioMother={setBioMother}
+                    isAdopted={isAdopted}
+                    setIsAdopted={setIsAdopted}
+                    adoptedFather={adoptedFather}
+                    setAdoptedFather={setAdoptedFather}
+                    adoptedMother={adoptedMother}
+                    setAdoptedMother={setAdoptedMother}
                 />
 
                 <button type="submit">Submit</button>
