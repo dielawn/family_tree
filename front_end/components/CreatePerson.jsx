@@ -4,6 +4,7 @@ import axios from "axios";
 import { NameForm } from "./NameForm";
 import { DatesForm } from "./Dates";
 import { ParentsForm } from "./Parents";
+import { ChildrenForm } from "./ChildrenForm";
 
 
 export const CreatePersonForm = () => {
@@ -22,8 +23,8 @@ export const CreatePersonForm = () => {
     const [dod, setDod] = useState('');
 
     //parents
-    const [bioFather, setBioFather] = useState('');
-    const [bioMother, setBioMother] = useState('');
+    const [bioFather, setBioFather] = useState({});
+    const [bioMother, setBioMother] = useState({});
     //toggle adopted inputs vis
     const [isAdopted, setIsAdopted] = useState(false); 
     const [adoptedFather, setAdoptedFather] = useState(null);
@@ -35,6 +36,7 @@ export const CreatePersonForm = () => {
     //biography
     const [bio, setBio] = useState('');
 
+    const [isFamily, setIsFamily] = useState(false);
 
     const handleSubmitPerson = async (e) => {
         e.preventDefault();
@@ -64,8 +66,29 @@ export const CreatePersonForm = () => {
         }
     };
 
-   
+    const handleFamily = async (relation, personId) => {
+        setIsFamily(true)
+        switch (relation) {
+         case 'bioFather':
+             setBioFather(personId);
+         case 'bioMother':
+             setBioMother(personId);
+         case 'adoptedFather':
+             setAdoptedFather(personId);
+         case 'adoptedMother':
+             setAdoptedMother(personId);
+         case 'children':
+             addToChildren(personId);   
+        case 'newPerson':
+            return       
+        };
+     };
 
+    const addToChildren = (child) => {
+        const tempArray = [...children]
+        tempArray.push(child)
+        setChildren(tempArray)
+    }
 
     return (
         <div>
@@ -81,6 +104,10 @@ export const CreatePersonForm = () => {
                     setMaiden={setMaiden}
                     common={common}
                     setCommon={setCommon}
+                    handleFamily={handleFamily}
+                    isFamily={isFamily}
+                    setIsFamily={setIsFamily}
+                    relation={'newPerson'}
                 />
                 <DatesForm 
                     dob={dob}
@@ -101,6 +128,11 @@ export const CreatePersonForm = () => {
                     setAdoptedFather={setAdoptedFather}
                     adoptedMother={adoptedMother}
                     setAdoptedMother={setAdoptedMother}
+                />
+                <ChildrenForm 
+                    children={children}
+                    setChildren={setChildren}
+                    addToChildren={addToChildren}
                 />
 
                 <button type="submit">Submit</button>

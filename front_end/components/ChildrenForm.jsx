@@ -1,24 +1,49 @@
 import React, { useState, useEffect } from "react";
 import { NameForm } from "./NameForm";
+import axios from "axios";
+import { config } from "../src/config";
 
-const ChildrenForm = ({ children, setChildren }) => {
-    const [message, setMessage] = useState('')
-    const [child, setChild] = useState('')
+export const ChildrenForm = ({ children, setChildren, addToChildren }) => {
+    const [message, setMessage] = useState('');
+    
+    const [firstName, setFirstName] = useState('');
+    const [middleName, setMiddleName] = useState('');
+    const [lastName, setLastName] = useState('');
 
-    const searchForPerson = async () => {
-        try {
-            // api call to search for person with childs name
-            //if so push child to children array
-            //else create new person with name form
+    const [tempChildren, setTempChildren] = useState([]);
 
-        } catch (error) {
-            setMessage(`Error: ${error.message}`)
-        }
+    const name = {
+        first: firstName,
+        middle: middleName,
+        last: lastName
     }
+    
+
+    const addChild = () => {
+        const tempArray = [...children]
+        tempArray.push(selectedPerson)
+        setChildren(tempArray)
+    };
+
+    useEffect(() => {
+       
+    }, []);
+
+    
 
     return (
         <fieldset>
             <legend>Add a child</legend>
+            <NameForm 
+                first={firstName}
+                setFirst={setFirstName}
+                middle={middleName}
+                setMiddle={setMiddleName}
+                last={lastName}
+                setLast={setLastName}
+                relation={'children'}
+            />
+            <p>{message}</p>
         </fieldset>
     )
 }

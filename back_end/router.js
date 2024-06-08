@@ -33,6 +33,8 @@ router.post('/person', verifyToken, personController.create_person);
 
 // view a person by id
 router.get('/person/:id', verifyToken, personController.view_person);
+// search for a person by name
+router.get('/person/search', personController.search_person_by_name);
 
 // update person
 router.put('/person/:id', verifyToken, personController.update_person);

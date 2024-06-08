@@ -15,15 +15,21 @@ const mediaSchema = new Schema({
     date: { type: Date }
 });
 
+const eventSchema = new Schema({
+    discription: { type: String, required: true},
+    date: { type: Date, required: true}
+});
+
 const personSchema = new Schema({
     name:  nameSchema ,
     bio: { type: String },
     dob: { type: Date, },
+    events: [eventSchema],
     dod: { type: Date, },
     bio_father: { type: Schema.Types.ObjectId, ref: 'Person' }, 
     bio_mother: { type: Schema.Types.ObjectId, ref: 'Person' },
-    adopted_father: { type: Schema.Types.ObjectId, ref: 'Person' },
-    adopted_mother: { type: Schema.Types.ObjectId, ref: 'Person' },
+    adoptive_father: { type: Schema.Types.ObjectId, ref: 'Person' },
+    adoptive_mother: { type: Schema.Types.ObjectId, ref: 'Person' },
     children: [{ type: Schema.Types.ObjectId, ref: 'Person' }],
     refrences: [mediaSchema],
     photos: [mediaSchema],
