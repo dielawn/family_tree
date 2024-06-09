@@ -49,17 +49,18 @@ export const CreatePersonForm = ({ personId }) => {
                 dob,
                 events,
                 dod,
-                bio_father: bioFather._id,// should these be the id
-                bio_mother: bioMother._id,
-                adoptive_father: adoptiveFather._id,
-                adoptive_mother: adoptiveMother._id,
+                bio_father: bioFather || '',
+                bio_mother: bioMother || '',
+                adoptive_father: adoptiveFather || '',
+                adoptive_mother: adoptiveMother || '',
                 children
             }
             const res = await axios.post(`${config.apiBaseUrl}/person`, newPerson);
             if (res.status === 201) {
-                setMessage(`Success: ${res.message}`)
+                setMessage(`Success: ${res.data.message}`)
+                console.log(`created person id: ${res.data.id}`)
             }
-            setMessage(`Failed submit person: ${res.message}`);
+            setMessage(`Failed submit person: ${res.data.message}`);
         } catch (error) {
                 setMessage(`Error: ${error.message}`)
         }
@@ -89,10 +90,8 @@ export const CreatePersonForm = ({ personId }) => {
         };
      };
 
-    const addToChildren = (child) => {
-        const tempArray = [...children]
-        tempArray.push(child)
-        setChildren(tempArray)
+    const addToChildren = (childId) => {
+        setChildren(prevChildren => [...prevChildren, childId])
     }
 
     return (

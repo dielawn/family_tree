@@ -42,7 +42,7 @@ export const ChildrenForm = ({ children, addToChildren, personId, handleRelation
                 params: { firstName, middleName, lastName }
             });
             if (res.status === 200 && res.data.persons.length > 0) {
-                setMessage(`Found matches: ${res.message}`)
+                setMessage(`Found matches: ${res.data.message}`)
                 setMatches(res.data.persons)
                 setLoading(false)
                 return
@@ -51,11 +51,11 @@ export const ChildrenForm = ({ children, addToChildren, personId, handleRelation
             const createRes = await axios.post(`${config.apiBaseUrl}/person`, child )
             if (createRes.status === 201) {
                 addToChildren(createRes.data.id)
-                setMessage(`Success: ${createRes.message}`)
+                setMessage(`Success: ${createRes.data.message}`)
                 setLoading(false)
                 return
             }
-            setMessage(`Failed post new child: ${createRes.message}`)
+            setMessage(`Failed post new child: ${createRes.data.message}`)
  
         } catch (error) {
             setMessage(`Error: ${error.message}`)

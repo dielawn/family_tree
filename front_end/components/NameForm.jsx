@@ -23,7 +23,7 @@ export const NameForm = ({ relation, first, setFirst, middle, setMiddle, last, s
             });
             if (res.status === 200) {
                 setMessage('Match or matches found')
-                setMatches(res.persons)
+                setMatches(res.data.persons)
             }
             setMessage('No Matches found')
 

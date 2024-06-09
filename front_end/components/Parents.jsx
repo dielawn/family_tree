@@ -32,18 +32,18 @@ export const ParentsForm = ({ bioFather, setBioFather, bioMother, setBioMother, 
             //if so set matches for selections
             if (res.status === 200 && res.data.persons.length > 0) {
                 setMatches(res.data.persons)
-                setMessage(`Found person or persons: ${res.message}`)
+                setMessage(`Found person or persons: ${res.data.message}`)
             } else {
                 //if not create person, set id
                 const createRes = await axios.post(`${config.apiBaseUrl}/person`, {
                    name: { first, middle, last },                     
                 })
                 if (createRes.status === 201) {
-                    setMessage(`Success: ${res.message}`)
+                    setMessage(`Success: ${res.data.message}`)
                     setId(createRes.data.id)
                     
                 }
-                setMessage(`Failed: ${createRes.message}`)
+                setMessage(`Failed: ${createRes.data.message}`)
             }
             
         } catch (error) {
