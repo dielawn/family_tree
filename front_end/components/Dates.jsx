@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import validateDate from '../utils/utils';
 
 export const DatesForm = ({ dob, setDob, events, setEvents, dod, setDod }) => {
     const [message, setMessage] = useState('');
@@ -9,14 +10,21 @@ export const DatesForm = ({ dob, setDob, events, setEvents, dod, setDod }) => {
     const handleNewEvent = (e) => {
         e.preventDefault();
        if (eventDesc !== '' && eventDate !== '') {
+        if (!validateDate(eventDate)) {
+            setMessage('Invalid date format. Please use YYYY-MM-DD.');
+            setTimeout(() => setMessage(''), 3000);
+            return
+        }
         const tempArray = [...events]
         tempArray.push({ description: eventDesc, date: eventDate })
         setEvents(tempArray);
         setEventDesc('');
         setEventDate('');
         setMessage('Event added successfully')
+        setTimeout(() => setMessage(''), 3000); 
        } else {
         setMessage('Please fill out both fields')
+        setTimeout(() => setMessage(''), 3000); 
        }
     };
 

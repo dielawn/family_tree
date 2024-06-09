@@ -4,10 +4,13 @@ import axios from 'axios';
 import { jwtDecode } from "jwt-decode";
 import { Login, Logout } from './Login';
 import { Register } from './Register';
+import { AuthUser } from '../components/AuthUser';
 
 function App() {
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState('Loading...');
+  const [userId, setUserId] = useState(null)
+  const [personId, setPersonId] = useState(null)
 
   const handleUser = async () => {
     const token = localStorage.getItem('token');
@@ -26,6 +29,8 @@ function App() {
         });
         if (res.status === 200 && res.data.user) {
           setUser(res.data.user);
+          setUserId(res.data.user._id);
+          setPersonId(res.data.user.person._id);
           setMessage('User set');
         } else {
           // log out
@@ -48,6 +53,7 @@ function App() {
       {user ?( <div>
           <h1>Hello {user.username}</h1>
           <Logout handleUser={handleUser}  />
+          <AuthUser personId={personId} />
           {/* Include other protected components like AuthReq */}
           
         </div>)

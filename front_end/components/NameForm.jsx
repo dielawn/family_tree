@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { config } from "../src/config";
 
-export const NameForm = ({ relation, first, setFirst, middle, setMiddle, last, setLast, maiden, setMaiden, common, setCommon, isFamily, setIsFamily}) => {
+export const NameForm = ({ relation, first, setFirst, middle, setMiddle, last, setLast, maiden, setMaiden, common, setCommon, handleRelation }) => {
     const [message, setMessage] = useState('');
-
     const [matches, setMatches] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     const findMatch = async () => {
+        if (!first && !middle && !last) {
+            setMessage('No valid name')
+            return;
+        }
+        setLoading(true)
         try {
             const res = await axios.get(`${config.apiBaseUrl}/persons/search`, {
                 params: {
@@ -19,15 +25,21 @@ export const NameForm = ({ relation, first, setFirst, middle, setMiddle, last, s
                 setMessage('Match or matches found')
                 setMatches(res.persons)
             }
+            setMessage('No Matches found')
 
         } catch (error) {
             setMessage(`Error: ${error.message}`)
         }
+        setLoading(false)
     };
 
-    useEffect(() =>{
-        findMatch();
-    }, [first, middle, last])
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            findMatch();
+        }, 500); // Debounce API calls by 500ms
+
+        return () => clearTimeout(timeoutId); // Cleanup timeout on component unmount or value change
+    }, [first, middle, last]);
 
     return (
        <div>
@@ -70,14 +82,17 @@ export const NameForm = ({ relation, first, setFirst, middle, setMiddle, last, s
                     onChange={(e) => setCommon(e.target.value)}
                 />
             </fieldset>
-                {matches && matches.map((match) => (
-                   <div key={match._id}> 
-                       <p>{match.name.first} {match.name.middle} {match.name.last}</p>
-                       <p>AKA {match.name.common}</p>
-                       <button onClick={() => handleFamily(relation, match._id)}>Select Person</button>
-                       
-                   </div>
-                ))}
+            {loading ? (
+                <p>Loading...</p>
+            ) : (
+                matches && matches.map((match) => (
+                    <div key={match._id}> 
+                        <p>{match.name.first} {match.name.middle} {match.name.last}</p>
+                        <p>AKA {match.name.common}</p>
+                        <button onClick={() => handleRelation(relation, match._id)}>Select Person</button>
+                    </div>
+                ))
+            )}
         <p>{message}</p>
        </div>
     )

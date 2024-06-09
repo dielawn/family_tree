@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { config } from "../src/config";
 
 import { NameForm } from "./NameForm";
 import { DatesForm } from "./Dates";
 import { ParentsForm } from "./Parents";
 import { ChildrenForm } from "./ChildrenForm";
+import { BioForm } from "./BioForm";
 
 
-export const CreatePersonForm = () => {
+
+export const CreatePersonForm = ({ personId }) => {
 
     const [message, setMessage] = useState('');
     // Name stuff
@@ -27,16 +30,14 @@ export const CreatePersonForm = () => {
     const [bioMother, setBioMother] = useState({});
     //toggle adopted inputs vis
     const [isAdopted, setIsAdopted] = useState(false); 
-    const [adoptedFather, setAdoptedFather] = useState(null);
-    const [adoptedMother, setAdoptedMother] = useState(null);
-
+    const [adoptiveFather, setAdoptiveFather] = useState(null);
+    const [adoptiveMother, setAdoptiveMother] = useState(null);
+    
     //children
     const [children, setChildren] = useState([]);
 
     //biography
     const [bio, setBio] = useState('');
-
-    const [isFamily, setIsFamily] = useState(false);
 
     const handleSubmitPerson = async (e) => {
         e.preventDefault();
@@ -48,39 +49,43 @@ export const CreatePersonForm = () => {
                 dob,
                 events,
                 dod,
-                bioFather,
-                bioMother,
-                adoptedFather,
-                adoptedMother,
+                bio_father: bioFather._id,// should these be the id
+                bio_mother: bioMother._id,
+                adoptive_father: adoptiveFather._id,
+                adoptive_mother: adoptiveMother._id,
                 children
             }
-            const res = await axios.post('/person', newPerson);
+            const res = await axios.post(`${config.apiBaseUrl}/person`, newPerson);
             if (res.status === 201) {
-                setMessage('New person added to database')
+                setMessage(`Success: ${res.message}`)
             }
-            setMessage(` ${res.status} Error: ${res.message}`);
-
-
+            setMessage(`Failed submit person: ${res.message}`);
         } catch (error) {
                 setMessage(`Error: ${error.message}`)
         }
     };
 
-    const handleFamily = async (relation, personId) => {
-        setIsFamily(true)
+    const handleRelation = async (relation, personId) => {
         switch (relation) {
-         case 'bioFather':
-             setBioFather(personId);
-         case 'bioMother':
-             setBioMother(personId);
-         case 'adoptedFather':
-             setAdoptedFather(personId);
-         case 'adoptedMother':
-             setAdoptedMother(personId);
-         case 'children':
-             addToChildren(personId);   
-        case 'newPerson':
-            return       
+            case 'bioFather':
+                setBioFather(personId);
+                break;
+            case 'bioMother':
+                setBioMother(personId);
+                break;
+            case 'adoptiveFather':
+                setAdoptiveFather(personId);
+                break;
+            case 'adoptiveMother':
+                setAdoptiveMother(personId);
+                break;
+            case 'children':
+                addToChildren(personId);   
+                break;
+            case 'newPerson':
+                return  
+        default:
+            console.log(`Unknown relation: ${relation}`);     
         };
      };
 
@@ -104,9 +109,7 @@ export const CreatePersonForm = () => {
                     setMaiden={setMaiden}
                     common={common}
                     setCommon={setCommon}
-                    handleFamily={handleFamily}
-                    isFamily={isFamily}
-                    setIsFamily={setIsFamily}
+                    handleRelation={handleRelation}
                     relation={'newPerson'}
                 />
                 <DatesForm 
@@ -124,16 +127,26 @@ export const CreatePersonForm = () => {
                     setBioMother={setBioMother}
                     isAdopted={isAdopted}
                     setIsAdopted={setIsAdopted}
-                    adoptedFather={adoptedFather}
-                    setAdoptedFather={setAdoptedFather}
-                    adoptedMother={adoptedMother}
-                    setAdoptedMother={setAdoptedMother}
+                    adoptiveFather={adoptiveFather}
+                    setAdoptiveFather={setAdoptiveFather}
+                    adoptiveMother={adoptiveMother}
+                    setAdoptiveMother={setAdoptiveMother}
+                    handleRelation={handleRelation}
                 />
                 <ChildrenForm 
                     children={children}
                     setChildren={setChildren}
                     addToChildren={addToChildren}
+                    personId={personId}
+                    handleRelation={handleRelation}
+                    isAdopted={isAdopted}
+                    setIsAdopted={setIsAdopted}
                 />
+                <BioForm
+                    bio={bio}
+                    setBio={setBio}    
+                />
+
 
                 <button type="submit">Submit</button>
             </form>             
