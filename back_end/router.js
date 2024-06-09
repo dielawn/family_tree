@@ -10,7 +10,7 @@ router.get('/', userController.home);
         // USER STUFF //
 
 // login
-router.post('/login'. userController.login);
+router.post('/login', userController.login);
 
 //create new user
 router.post('/register', userController.create_user);
@@ -35,6 +35,8 @@ router.post('/person', verifyToken, personController.create_person);
 router.get('/person/:id', verifyToken, personController.view_person);
 // search for a person by name
 router.get('/person/search', personController.search_person_by_name);
+// all persons
+router.get('/persons', verifyToken, personController.all_persons)
 
 // update person
 router.put('/person/:id', verifyToken, personController.update_person);

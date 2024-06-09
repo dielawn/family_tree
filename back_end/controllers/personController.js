@@ -69,11 +69,14 @@ exports.search_person_by_name = async (req, res) => {
 exports.all_persons = async (req, res) => {
     try {
         const allPersons = await Person.find();
-        res.status(200).json({message: 'Successfully retrieved all persons', allPersons});
+        if (allPersons.length > 0) {
+            return res.status(200).json({message: 'Successfully retrieved all persons', persons: allPersons});
+        }
+        res.status(404).json({message: 'No persons found in database'});
     } catch (error) {
         res.status(500).json({ message: `Error all persons: ${error.message}` });
     }
-}
+};
 
 
 //update

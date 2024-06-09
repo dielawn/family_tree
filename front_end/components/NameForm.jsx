@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { config } from "../src/config";
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 export const NameForm = ({ relation, first, setFirst, middle, setMiddle, last, setLast, maiden, setMaiden, common, setCommon, handleRelation }) => {
     const [message, setMessage] = useState('');
@@ -14,7 +14,7 @@ export const NameForm = ({ relation, first, setFirst, middle, setMiddle, last, s
         }
         setLoading(true)
         try {
-            const res = await axios.get(`${config.apiBaseUrl}/persons/search`, {
+            const res = await axios.get(`${apiBaseUrl}/persons/search`, {
                 params: {
                     first,
                     middle,
@@ -88,7 +88,7 @@ export const NameForm = ({ relation, first, setFirst, middle, setMiddle, last, s
                 matches && matches.map((match) => (
                     <div key={match._id}> 
                         <p>{match.name.first} {match.name.middle} {match.name.last}</p>
-                        <p>AKA {match.name.common}</p>
+                        <p>ID {match._id}</p>
                         <button onClick={() => handleRelation(relation, match._id)}>Select Person</button>
                     </div>
                 ))

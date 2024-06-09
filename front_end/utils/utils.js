@@ -1,4 +1,3 @@
-
 const validateDate = (dateString) => {
     const regex = /^\d{4}-\d{2}-\d{2}$/; // Regular expression for YYYY-MM-DD format
     if (!regex.test(dateString)) return false;
@@ -11,6 +10,4 @@ const validateDate = (dateString) => {
     return dateString === date.toISOString().split('T')[0];
 };
 
-export {
-    validateDate
-}
+export default validateDate

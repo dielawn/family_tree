@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { config } from "../src/config";
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 import { NameForm } from "./NameForm";
 
 export const ChildrenForm = ({ children, addToChildren, personId, handleRelation, isAdopted, setIsAdopted }) => {
@@ -38,7 +38,7 @@ export const ChildrenForm = ({ children, addToChildren, personId, handleRelation
         setLoading(true)
         try {
             //check for existing person
-            const res = await axios.get(`${config.apiBaseUrl}/person/search`, {
+            const res = await axios.get(`${apiBaseUrl}/person/search`, {
                 params: { firstName, middleName, lastName }
             });
             if (res.status === 200 && res.data.persons.length > 0) {
@@ -48,7 +48,7 @@ export const ChildrenForm = ({ children, addToChildren, personId, handleRelation
                 return
             }
             //create new person
-            const createRes = await axios.post(`${config.apiBaseUrl}/person`, child )
+            const createRes = await axios.post(`${apiBaseUrl}/person`, child )
             if (createRes.status === 201) {
                 addToChildren(createRes.data.id)
                 setMessage(`Success: ${createRes.data.message}`)
@@ -137,7 +137,7 @@ export const ChildrenForm = ({ children, addToChildren, personId, handleRelation
                 matches && matches.map((match) => (
                     <div key={match._id}> 
                         <p>{match.name.first} {match.name.middle} {match.name.last}</p>
-                        <p>AKA {match.name.common}</p>
+                        <p>ID {match._id}</p>
                         <button onClick={() => handleRelation(relation, match._id)}>Select Person</button>
                     </div>
                 ))

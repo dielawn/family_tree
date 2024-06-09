@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { config } from "../src/config";
+
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 import { NameForm } from "./NameForm";
 import { DatesForm } from "./Dates";
@@ -55,7 +56,7 @@ export const CreatePersonForm = ({ personId }) => {
                 adoptive_mother: adoptiveMother || '',
                 children
             }
-            const res = await axios.post(`${config.apiBaseUrl}/person`, newPerson);
+            const res = await axios.post(`${apiBaseUrl}/person`, newPerson);
             if (res.status === 201) {
                 setMessage(`Success: ${res.data.message}`)
                 console.log(`created person id: ${res.data.id}`)

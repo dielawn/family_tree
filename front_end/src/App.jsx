@@ -2,9 +2,13 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import axios from 'axios';
 import { jwtDecode } from "jwt-decode";
-import { Login, Logout } from './Login';
-import { Register } from './Register';
+
+
+import { Login, Logout } from '../components/Login';
+import { Register } from '../components/Register';
 import { AuthUser } from '../components/AuthUser';
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+
 
 function App() {
   const [user, setUser] = useState(null);
@@ -24,7 +28,7 @@ function App() {
       }
     } else {
       try {
-        const res = await axios.get(`${config.apiBaseUrl}/`, {
+        const res = await axios.get(`${apiBaseUrl}/`, {
           headers: { Authorization: `Bearer ${token}`},
         });
         if (res.status === 200 && res.data.user) {

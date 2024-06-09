@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from 'axios';
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 
 export const Login = ({ handleUser }) => {
@@ -10,7 +11,7 @@ export const Login = ({ handleUser }) => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post(`${config.apiBaseUrl}/login`, { username, password });
+            const res = await axios.post(`${apiBaseUrl}/login`, { username, password });
             localStorage.setItem('token', res.data.token)
             handleUser();
             setMessage('Login successful');
@@ -20,7 +21,8 @@ export const Login = ({ handleUser }) => {
     };
 
     return (
-        <div>
+        <fieldset>
+            <legend>Login</legend>
             <form onSubmit={handleLogin}>
                 <input 
                     type="text" 
@@ -37,7 +39,7 @@ export const Login = ({ handleUser }) => {
                 <button type="submit">Login</button>
             </form>
             <p>{message}</p>
-        </div>
+        </fieldset>
     )
 };
 

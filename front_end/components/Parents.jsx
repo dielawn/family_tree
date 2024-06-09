@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { config } from "../src/config";
 import { NameForm } from "./NameForm";
 
 export const ParentsForm = ({ bioFather, setBioFather, bioMother, setBioMother, isAdopted, setIsAdopted, adoptiveFather, setAdoptedFather, adoptiveMother, setAdoptiveMother, handleRelation}) => {
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false)
+    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
     const initialNameState = {
         first: '',
@@ -26,7 +26,7 @@ export const ParentsForm = ({ bioFather, setBioFather, bioMother, setBioMother, 
         setLoading(true)
         try {
             //check if person exists            
-            const res = await axios.get(`${config.apiBaseUrl}/person/search`, {
+            const res = await axios.get(`${apiBaseUrl}/person/search`, {
                 params: { first, middle, last,}
             });
             //if so set matches for selections
@@ -35,7 +35,7 @@ export const ParentsForm = ({ bioFather, setBioFather, bioMother, setBioMother, 
                 setMessage(`Found person or persons: ${res.data.message}`)
             } else {
                 //if not create person, set id
-                const createRes = await axios.post(`${config.apiBaseUrl}/person`, {
+                const createRes = await axios.post(`${apiBaseUrl}/person`, {
                    name: { first, middle, last },                     
                 })
                 if (createRes.status === 201) {
@@ -130,7 +130,7 @@ export const ParentsForm = ({ bioFather, setBioFather, bioMother, setBioMother, 
                 matches && matches.map((match) => (
                     <div key={match._id}>
                         <p>{match.name.first} {match.name.middle} {match.name.last}</p>
-                        <p>AKA {match.name.common}</p>
+                        <p>ID {match._id}</p>
                         <button onClick={() => handleRelation(match.relation, match._id)}>Select Relation</button>
                     </div>
                 ))

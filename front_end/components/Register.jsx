@@ -1,6 +1,8 @@
 import React, {useState} from "react";
 import axios from "axios";
-import config from "./config";
+// Register.jsx
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+
 
 export const Register = () => {
     const [username, setUsername] = useState('');
@@ -11,7 +13,7 @@ export const Register = () => {
     const handleRegistration = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post(`${config.apiBaseUrl}/register`, { username, password, confirmPwd });
+            const res = await axios.post(`${apiBaseUrl}/register`, { username, password, confirmPwd });
             if (res.status === 201) {
                 setMessage('Registration successful');
             }
