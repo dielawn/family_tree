@@ -12,9 +12,10 @@ const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 function App() {
   const [user, setUser] = useState(null);
-  const [message, setMessage] = useState('Loading...');
+  const [message, setMessage] = useState('');
   const [userId, setUserId] = useState(null)
   const [personId, setPersonId] = useState(null)
+  const [registerVis, setRegisterVis] = useState(false);
 
   const handleUser = async () => {
     const token = localStorage.getItem('token');
@@ -54,8 +55,9 @@ function App() {
 
   return (
     <div>
+      <h1>Family Tree App</h1>
+      <h2>Hello {user && user.username}</h2>
       {user ?( <div>
-          <h1>Hello {user.username}</h1>
           <Logout handleUser={handleUser}  />
           <AuthUser personId={personId} />
           {/* Include other protected components like AuthReq */}
@@ -63,12 +65,17 @@ function App() {
         </div>)
       : 
      ( <div>
-        <h1>Hello</h1>
-        <h3>Please Login</h3>
-        <Login handleUser={handleUser} />
-        <hr />
-        <h4>Or Create a new account</h4>
-        <Register />
+        
+        {!registerVis && 
+        <>
+          <h3>Please Login</h3>
+          <Login handleUser={handleUser} />
+         
+        </>}
+        
+        <button onClick={() => setRegisterVis(!registerVis)}>{registerVis ? 'Login' : 'Create a new account' }</button>
+     
+       {registerVis && <Register />}
       </div>)}
       <p>{message}</p>
     </div>

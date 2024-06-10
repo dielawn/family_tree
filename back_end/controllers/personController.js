@@ -1,11 +1,13 @@
 const Person = require('../models/person');
+const Name = require('../models/person')
 
 //create
 exports.create_person = async (req, res) => {
     try {
-        const { first, middle, last, maiden, common, dob, events, dod, bio_father, bio_mother, adoptive_father, adoptive_mother, children  } = req.body
-        const newPerson = {
-            name: { first, middle, last, maiden, common },
+        const { first, middle, last, maiden, common, dob, events, dod, bio_father, bio_mother, adoptive_father, adoptive_mother, children, bio } = req.body;
+        const newPersonName = new Name({ first, middle, last, maiden, common })
+        const newPerson = new Person({
+            name: newPersonName,
             bio,
             dob,
             events,
@@ -15,21 +17,26 @@ exports.create_person = async (req, res) => {
             adoptive_father,
             adoptive_mother,
             children,
-
-        }        
-        // check for existing person
-        const isMatch = await Person.findOne(newPerson)
+            references: [],
+            photos: [],
+            audio: [],
+            video: []
+        });
+console.log("newPerson", newPerson, newPersonName)
+        // Check for existing person
+        const isMatch = await Person.findOne({ 'name.first': first, 'name.middle': middle, 'name.last': last });
         if (isMatch) {
-            return res.status(400).json({ message: 'Person already in database' })
+            return res.status(400).json({ message: 'Person already in database' });
         } else {
+            console.log('New Person', newPerson);
             const savedPerson = await newPerson.save();
-            res.status(201).json({ message: 'Added new person to database', id: savedPerson });
+            console.log('saved person', savedPerson)
+            res.status(201).json({ message: 'Added new person to database', id: savedPerson._id });
         }
-    }  catch (error) {
-        res.status(500).json({ message: `Error create person: ${error.message}` });
+    } catch (error) {
+        res.status(500).json({ message: `Error creating person: ${error.message}` });
     }
 };
-
 //read by id
 exports.view_person = async (req, res) => {
     try {

@@ -26,12 +26,15 @@ export const ChildrenForm = ({ children, addToChildren, personId, handleRelation
         dob: '',
         events: [],
         dod: '',
-        bioFather: isBioFather ? personId : '',
-        bioMother: isBioMother ? personId : '',
-        adoptedFather: isAdoptiveFather ? personId : '',
-        adoptedMother: isAdoptiveMother ? personId : '',
+        bioFather: '',
+        bioMother: '',
+        adoptedFather: '',
+        adoptedMother: '',
         children: []
     }
+
+    const token = localStorage.getItem('token')
+  
 
     const addChild = async (e) => {
         e.preventDefault();
@@ -39,8 +42,11 @@ export const ChildrenForm = ({ children, addToChildren, personId, handleRelation
         try {
             //check for existing person
             const res = await axios.get(`${apiBaseUrl}/person/search`, {
-                params: { firstName, middleName, lastName }
-            });
+                params: { firstName, middleName, lastName },
+                headers: { 
+                    Authorization: `Bearer ${token}`
+                }
+              });
             if (res.status === 200 && res.data.persons.length > 0) {
                 setMessage(`Found matches: ${res.data.message}`)
                 setMatches(res.data.persons)
@@ -48,7 +54,11 @@ export const ChildrenForm = ({ children, addToChildren, personId, handleRelation
                 return
             }
             //create new person
-            const createRes = await axios.post(`${apiBaseUrl}/person`, child )
+            const createRes = await axios.post(`${apiBaseUrl}/person`, child, { 
+                headers: { 
+                    Authorization: `Bearer ${token}`
+                }
+            });
             if (createRes.status === 201) {
                 addToChildren(createRes.data.id)
                 setMessage(`Success: ${createRes.data.message}`)
@@ -135,7 +145,7 @@ export const ChildrenForm = ({ children, addToChildren, personId, handleRelation
                 <p>Loading...</p>
             ) : (
                 matches && matches.map((match) => (
-                    <div key={match._id}> 
+                    <div key={match._id} className="matchesDiv"> 
                         <p>{match.name.first} {match.name.middle} {match.name.last}</p>
                         <p>ID {match._id}</p>
                         <button onClick={() => handleRelation(relation, match._id)}>Select Person</button>

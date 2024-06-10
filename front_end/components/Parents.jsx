@@ -13,21 +13,24 @@ export const ParentsForm = ({ bioFather, setBioFather, bioMother, setBioMother, 
         last: '',
     };
 
-    const [bioFatherName, setBioFatherName] = useState(bioFather ? bioFather.name : initialNameState);
-    const [bioMotherName, setBioMotherName] = useState(bioMother ? bioMother.name : initialNameState);
+    const [bioFatherName, setBioFatherName] = useState(initialNameState);
+    const [bioMotherName, setBioMotherName] = useState(initialNameState);
     const [adoptiveFatherName, setAdoptiveFatherName] = useState(adoptiveFather ? adoptiveFather.name : initialNameState);
     const [adoptiveMotherName, setAdoptiveMotherName] = useState(adoptiveMother ? adoptiveMother.name : initialNameState);
 
 
     const [matches, setMatches] = useState([])
- 
+    const token = localStorage.getItem('token')
 
     const handleParents = async (first, middle, last, setId) => {
         setLoading(true)
         try {
             //check if person exists            
-            const res = await axios.get(`${apiBaseUrl}/person/search`, {
-                params: { first, middle, last,}
+            console.log(first)
+            const res = await axios.get(`${apiBaseUrl}/person/search`, { first, middle, last,},{
+                headers: { 
+                    Authorization: `Bearer ${token}`
+                }
             });
             //if so set matches for selections
             if (res.status === 200 && res.data.persons.length > 0) {
@@ -35,8 +38,11 @@ export const ParentsForm = ({ bioFather, setBioFather, bioMother, setBioMother, 
                 setMessage(`Found person or persons: ${res.data.message}`)
             } else {
                 //if not create person, set id
-                const createRes = await axios.post(`${apiBaseUrl}/person`, {
-                   name: { first, middle, last },                     
+                const createRes = await axios.post(`${apiBaseUrl}/person`, { first, middle, last }, 
+                {
+                    headers: { 
+                        Authorization: `Bearer ${token}`
+                    }                     
                 })
                 if (createRes.status === 201) {
                     setMessage(`Success: ${res.data.message}`)
@@ -53,28 +59,29 @@ export const ParentsForm = ({ bioFather, setBioFather, bioMother, setBioMother, 
     }
 
     useEffect(() => {
-        if (bioFatherName.first && bioFatherName.middle && bioFatherName.last) {
-            handleParents(bioFatherName.first, bioFatherName.middle, bioFatherName.last, setBioFather);
+        if (bioFather && bioFather.name) {
+            setBioFatherName(bioFather.name);
         }
-    }, [bioFatherName.first, bioFatherName.middle, bioFatherName.last]);
+    }, [bioFather]);
 
     useEffect(() => {
-        if (bioMotherName.first && bioMotherName.middle && bioMotherName.last) {
-            handleParents(bioMotherName.first, bioMotherName.middle, bioMotherName.last, setBioMother);
+        if (bioMother && bioMother.name) {
+            setBioMotherName(bioMother.name);
         }
-    }, [bioMotherName.first, bioMotherName.middle, bioMotherName.last]);
+    }, [bioMother]);
 
     useEffect(() => {
-        if (isAdopted && adoptiveFatherName.first && adoptiveFatherName.middle && adoptiveFatherName.last) {
-            handleParents(adoptiveFatherName.first, adoptiveFatherName.middle, adoptiveFatherName.last, setAdoptedFather);
+        if (adoptiveFather && adoptiveFather.name) {
+            setAdoptiveFatherName(adoptiveFather.name);
         }
-    }, [adoptiveFatherName.first, adoptiveFatherName.middle, adoptiveFatherName.last, isAdopted]);
+    }, [adoptiveFather]);
 
     useEffect(() => {
-        if (isAdopted && adoptiveMotherName.first && adoptiveMotherName.middle && adoptiveMotherName.last) {
-            handleParents(adoptiveMotherName.first, adoptiveMotherName.middle, adoptiveMotherName.last, setAdoptiveMother);
+        if (adoptiveMother && adoptiveMother.name) {
+            setAdoptiveMotherName(adoptiveMother.name);
         }
-    }, [adoptiveMotherName.first, adoptiveMotherName.middle, adoptiveMotherName.last, isAdopted]);
+    }, [adoptiveMother]);
+
 
     return (
         <fieldset>
@@ -128,7 +135,7 @@ export const ParentsForm = ({ bioFather, setBioFather, bioMother, setBioMother, 
                 <p>Loading...</p>
             ) : (
                 matches && matches.map((match) => (
-                    <div key={match._id}>
+                    <div key={match._id} className="matchesDiv">
                         <p>{match.name.first} {match.name.middle} {match.name.last}</p>
                         <p>ID {match._id}</p>
                         <button onClick={() => handleRelation(match.relation, match._id)}>Select Relation</button>

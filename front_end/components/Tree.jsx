@@ -9,12 +9,19 @@ export const FamilyTree = () => {
 
     const [persons, setPersons] = useState([]);
     const [tree, setTree] = useState(null);
+
+    
     
     const fetchAllPersons = async () => {
+        const token = localStorage.getItem('token')
         setLoading(true)
         try {
             //get all Persons
-            const res = await axios.get(`${apiBaseUrl}/persons`);
+            const res = await axios.get(`${apiBaseUrl}/persons`,  {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
             if (res.status === 200) {
                 setPersons(res.data.persons)
                 setMessage(`Persons data set: ${res.data.message}`)

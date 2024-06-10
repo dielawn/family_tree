@@ -9,3 +9,18 @@
   border: solid white 1px;
   margin-left: 20px;
 }
+
+fieldset {
+  display: flex;
+  flex-direction: column;
+  max-width: 200px;
+  
+}
+
+.matchesDiv {
+  border: solid white 1px;
+}
+
+.messageTxt {
+  color: aqua;
+}

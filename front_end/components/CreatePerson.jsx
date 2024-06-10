@@ -27,8 +27,8 @@ export const CreatePersonForm = ({ personId }) => {
     const [dod, setDod] = useState('');
 
     //parents
-    const [bioFather, setBioFather] = useState({});
-    const [bioMother, setBioMother] = useState({});
+    const [bioFather, setBioFather] = useState(null);
+    const [bioMother, setBioMother] = useState(null);
     //toggle adopted inputs vis
     const [isAdopted, setIsAdopted] = useState(false); 
     const [adoptiveFather, setAdoptiveFather] = useState(null);
@@ -40,32 +40,59 @@ export const CreatePersonForm = ({ personId }) => {
     //biography
     const [bio, setBio] = useState('');
 
+    const token = localStorage.getItem('token')
+    
+    useEffect(() => {
+        
+        console.log('name', first, middle, last)
+    }, [first, middle, last])
+
     const handleSubmitPerson = async (e) => {
         e.preventDefault();
         try {
-            const personName =  { first, middle, last, maiden, common } 
+            const personName = { first, middle, last, maiden, common };
             const newPerson = {
-                personName,
-                bio,
-                dob,
-                events,
-                dod,
-                bio_father: bioFather || '',
-                bio_mother: bioMother || '',
-                adoptive_father: adoptiveFather || '',
-                adoptive_mother: adoptiveMother || '',
-                children
-            }
-            const res = await axios.post(`${apiBaseUrl}/person`, newPerson);
+                name: personName,
+                bio: bio || '',
+                dob: dob || null,
+                events: events || [],
+                dod: dod || null,
+                bio_father: bioFather ? bioFather : null,
+                bio_mother: bioMother ? bioMother : null,
+                adoptive_father: adoptiveFather ? adoptiveFather : null,
+                adoptive_mother: adoptiveMother ? adoptiveMother : null,
+                children: children || [],
+                references: [],
+                photos: [],
+                audio: [],
+                video: []
+            };
+            console.log(apiBaseUrl, newPerson);
+            const res = await axios.post(`${apiBaseUrl}/person`, newPerson, {
+                headers: { 
+                    Authorization: `Bearer ${token}`
+                }
+            });
             if (res.status === 201) {
-                setMessage(`Success: ${res.data.message}`)
-                console.log(`created person id: ${res.data.id}`)
+                setMessage(`Success: ${res.data.message}`);
+                console.log(`created person id: ${res.data.id}`);
+            } else {
+                setMessage(`Failed to submit person: ${res.data.message}`);
             }
-            setMessage(`Failed submit person: ${res.data.message}`);
         } catch (error) {
-                setMessage(`Error: ${error.message}`)
+            if (error.response) {
+                console.error("Error data:", error.response.data);
+                console.error("Error status:", error.response.status);
+                console.error("Error headers:", error.response.headers);
+            } else if (error.request) {
+                console.error("Error request:", error.request);
+            } else {
+                console.error("Error message:", error.message);
+            }
+            console.error("Error config:", error.config);
         }
     };
+    
 
     const handleRelation = async (relation, personId) => {
         switch (relation) {
@@ -94,6 +121,10 @@ export const CreatePersonForm = ({ personId }) => {
     const addToChildren = (childId) => {
         setChildren(prevChildren => [...prevChildren, childId])
     }
+
+    useEffect(() => {
+        console.log(first)
+    }, [first])
 
     return (
         <div>

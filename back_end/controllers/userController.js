@@ -57,34 +57,35 @@ exports.create_user = [
                 throw new Error('Passwords do not match');
             }
             return true;
-    })
-    .trim(),
+        })
+        .trim(),
     async (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({ message: errors.array() });
+            return res.status(400).json({ errors: errors.array() });
         }
-    try {
-        const { username, password } = req.body
+        try {
+            const { username, password } = req.body;
 
-        // check for existing user
-        const existingUser = await User.findOne({ username });
-        if (existingUser) {
-            return res.status(400).json({ message: 'Username already exists' });
+            // Check for existing user
+            const existingUser = await User.findOne({ username });
+            if (existingUser) {
+                return res.status(400).json({ message: 'Username already exists' });
+            }
+
+            // Hash password
+            const hashedPassword = await bcrypt.hash(password, 10);
+
+            // Create new user
+            const newUser = new User({ username, password: hashedPassword });
+            const savedUser = await newUser.save();
+
+            res.status(201).json({ message: 'New user created', id: savedUser._id });
+        } catch (error) {
+            res.status(500).json({ message: `Error creating user: ${error.message}` });
         }
-
-        // hash password
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        const newUser = { username, password: hashedPassword };
-        const savedUser = await newUser.save();
-
-        res.status(201).json({ message: 'New user created', id: savedUser._id });
-
-    } catch (error) {
-        res.status(500).json({ message: `Error creating user: ${error.message}` });
     }
-}];
+];
 
 // view user
 exports.get_user = async (req, res) => {

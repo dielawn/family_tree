@@ -9,16 +9,20 @@ export const NameForm = ({ relation, first, setFirst, middle, setMiddle, last, s
 
     const findMatch = async () => {
         if (!first && !middle && !last) {
-            setMessage('No valid name')
+            setMessage('First & Last name fields required')
             return;
         }
         setLoading(true)
+        
         try {
             const res = await axios.get(`${apiBaseUrl}/persons/search`, {
                 params: {
                     first,
                     middle,
                     last
+                },
+                headers: { 
+                    Authorization: `Bearer ${token}`
                 }
             });
             if (res.status === 200) {
@@ -34,6 +38,7 @@ export const NameForm = ({ relation, first, setFirst, middle, setMiddle, last, s
     };
 
     useEffect(() => {
+        
         const timeoutId = setTimeout(() => {
             findMatch();
         }, 500); // Debounce API calls by 500ms
@@ -44,7 +49,8 @@ export const NameForm = ({ relation, first, setFirst, middle, setMiddle, last, s
     return (
        <div>
         
-            <fieldset>
+            <fieldset className="nameFieldset">
+            <p className="messageTxt">{message}</p>
                 <legend>Name:</legend>
                 <label htmlFor="firstInput">First:</label>
                 <input 
@@ -86,14 +92,14 @@ export const NameForm = ({ relation, first, setFirst, middle, setMiddle, last, s
                 <p>Loading...</p>
             ) : (
                 matches && matches.map((match) => (
-                    <div key={match._id}> 
+                    <div key={match._id} className="matchesDiv"> 
                         <p>{match.name.first} {match.name.middle} {match.name.last}</p>
                         <p>ID {match._id}</p>
                         <button onClick={() => handleRelation(relation, match._id)}>Select Person</button>
                     </div>
                 ))
             )}
-        <p>{message}</p>
+        
        </div>
     )
 }
