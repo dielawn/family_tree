@@ -17,9 +17,9 @@ export const NameForm = ({ relation, first, setFirst, middle, setMiddle, last, s
         try {
             const res = await axios.get(`${apiBaseUrl}/persons/search`, {
                 params: {
-                    first,
-                    middle,
-                    last
+                        first,
+                        middle,
+                        last
                 },
                 headers: { 
                     Authorization: `Bearer ${token}`

@@ -4,10 +4,19 @@ const Name = require('../models/person')
 //create
 exports.create_person = async (req, res) => {
     try {
-        const { first, middle, last, maiden, common, dob, events, dod, bio_father, bio_mother, adoptive_father, adoptive_mother, children, bio } = req.body;
-        const newPersonName = new Name({ first, middle, last, maiden, common })
+        console.log(req.body.name)
+        const { name, bio, dob, events, dod, bio_father, bio_mother, adoptive_father, adoptive_mother, children } = req.body;
+        const newPersonName = { first: name.first, middle: name.middle, last: name.last, maiden: name.maiden, common: name.common }
+        console.log('newPErsonName',newPersonName)
+        // Create a new Person instance with proper nested name object
         const newPerson = new Person({
-            name: newPersonName,
+            name: {
+                first: name.first,
+                middle: name.middle,
+                last: name.last,
+                maiden: name.maiden,
+                nickname: name.common
+            },
             bio,
             dob,
             events,
@@ -22,18 +31,21 @@ exports.create_person = async (req, res) => {
             audio: [],
             video: []
         });
-console.log("newPerson", newPerson, newPersonName)
+        console.log('newPerson', newPerson)
+        if (!name || !name.first || !name.last) {
+            return res.status(400).json({ message: 'Name with first and last fields is required' });
+        }
         // Check for existing person
-        const isMatch = await Person.findOne({ 'name.first': first, 'name.middle': middle, 'name.last': last });
+        const isMatch = await Person.findOne({ 'name.first': name.first, 'name.middle': name.middle, 'name.last': name.last });
         if (isMatch) {
             return res.status(400).json({ message: 'Person already in database' });
         } else {
-            console.log('New Person', newPerson);
+            console.log("New person to be saved:", newPerson);
             const savedPerson = await newPerson.save();
-            console.log('saved person', savedPerson)
             res.status(201).json({ message: 'Added new person to database', id: savedPerson._id });
         }
     } catch (error) {
+        
         res.status(500).json({ message: `Error creating person: ${error.message}` });
     }
 };

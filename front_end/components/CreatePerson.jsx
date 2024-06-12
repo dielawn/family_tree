@@ -67,7 +67,7 @@ export const CreatePersonForm = ({ personId }) => {
                 audio: [],
                 video: []
             };
-            console.log(apiBaseUrl, newPerson);
+            console.log("newPerson to be sent:", newPerson);
             const res = await axios.post(`${apiBaseUrl}/person`, newPerson, {
                 headers: { 
                     Authorization: `Bearer ${token}`

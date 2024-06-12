@@ -6,7 +6,7 @@ const nameSchema = new Schema({
     middle: { type: String, },
     last: { type: String, required: true, },
     maiden: { type: String},
-    nickname: { type: String },
+    common: { type: String },
 });
 
 const mediaSchema = new Schema({
