@@ -57,27 +57,26 @@ export const CreatePersonForm = ({ personId }) => {
                 dob: dob || null,
                 events: events || [],
                 dod: dod || null,
-                bio_father: bioFather ? bioFather : null,
-                bio_mother: bioMother ? bioMother : null,
-                adoptive_father: adoptiveFather ? adoptiveFather : null,
-                adoptive_mother: adoptiveMother ? adoptiveMother : null,
-                children: children || [],
-                references: [],
-                photos: [],
-                audio: [],
-                video: []
+                bio_father: bioFather || null,
+                bio_mother: bioMother || null,
+                adoptive_father: adoptiveFather || null,
+                adoptive_mother: adoptiveMother || null,
+                children: children || []
             };
-            console.log("newPerson to be sent:", newPerson);
+    
+            console.log("newPerson to be sent:", newPerson); // Log the data before sending
+    
             const res = await axios.post(`${apiBaseUrl}/person`, newPerson, {
-                headers: { 
+                headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
+    
             if (res.status === 201) {
                 setMessage(`Success: ${res.data.message}`);
                 console.log(`created person id: ${res.data.id}`);
             } else {
-                setMessage(`Failed to submit person: ${res.data.message}`);
+                setMessage(`Failed submit person: ${res.data.message}`);
             }
         } catch (error) {
             if (error.response) {
@@ -92,6 +91,7 @@ export const CreatePersonForm = ({ personId }) => {
             console.error("Error config:", error.config);
         }
     };
+    
     
 
     const handleRelation = async (relation, personId) => {

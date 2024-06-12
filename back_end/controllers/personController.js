@@ -1,54 +1,76 @@
 const Person = require('../models/person');
 const Name = require('../models/person')
 
+//create name
+exports.create_name = async (req, res) => {
+    try {
+        console.log('req.body', req.body)
+        const { name } = req.body;
+
+        // Ensure name fields are provided
+        if (!name || !name.first || !name.last) {
+            return res.status(400).json({ message: 'Name with first and last fields is required' });
+        }
+        console.log('name stuff', name, name.first, name.last)
+        const newPersonName = new Name({ first: req.body.name.first, middle: req.body.name.middle, last: req.body.name.last, maiden: req.body.name.maiden, common: req.body.name.common})
+        await newPersonName.save();
+        res.status(201).json({ message: 'Name saved', name: newPersonName})
+        console.log(newPersonName)
+    } catch (error) {
+        console.error("Error creating Name:", error);
+        res.status(500).json({ message: `Error creating Name: ${error.message}` });
+    }
+};
+
 //create
 exports.create_person = async (req, res) => {
     try {
-        console.log(req.body.name)
+        console.log("Request body:", req.body); // Log the entire request body
+
         const { name, bio, dob, events, dod, bio_father, bio_mother, adoptive_father, adoptive_mother, children } = req.body;
-        const newPersonName = { first: name.first, middle: name.middle, last: name.last, maiden: name.maiden, common: name.common }
-        console.log('newPErsonName',newPersonName)
-        // Create a new Person instance with proper nested name object
+
+        // Ensure name fields are provided
+        if (!name || !name.first || !name.last) {
+            return res.status(400).json({ message: 'Name with first and last fields is required' });
+        }
+        const newPersonName = new Name({ first: req.body.name.first, middle: req.body.name.middle, last: req.body.name.last, maiden: req.body.name.maiden, common: req.body.name.common})
+        const savedName = await newPersonName.save();
+        // Construct the new Person instance
+        console.log('name', newPersonName)
         const newPerson = new Person({
-            name: {
-                first: name.first,
-                middle: name.middle,
-                last: name.last,
-                maiden: name.maiden,
-                nickname: name.common
-            },
-            bio,
-            dob,
-            events,
-            dod,
-            bio_father,
-            bio_mother,
-            adoptive_father,
-            adoptive_mother,
-            children,
+            name: savedName,
+            bio: bio || '',
+            dob: dob || null,
+            events: events || [],
+            dod: dod || null,
+            bio_father: bio_father || null,
+            bio_mother: bio_mother || null,
+            adoptive_father: adoptive_father || null,
+            adoptive_mother: adoptive_mother || null,
+            children: children || [],
             references: [],
             photos: [],
             audio: [],
             video: []
         });
-        console.log('newPerson', newPerson)
-        if (!name || !name.first || !name.last) {
-            return res.status(400).json({ message: 'Name with first and last fields is required' });
-        }
+
+        console.log("New person to be saved:", newPerson);
+
         // Check for existing person
         const isMatch = await Person.findOne({ 'name.first': name.first, 'name.middle': name.middle, 'name.last': name.last });
         if (isMatch) {
             return res.status(400).json({ message: 'Person already in database' });
         } else {
-            console.log("New person to be saved:", newPerson);
             const savedPerson = await newPerson.save();
             res.status(201).json({ message: 'Added new person to database', id: savedPerson._id });
         }
     } catch (error) {
-        
+        console.error("Error creating person:", error);
         res.status(500).json({ message: `Error creating person: ${error.message}` });
     }
 };
+
+
 //read by id
 exports.view_person = async (req, res) => {
     try {
