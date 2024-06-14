@@ -143,7 +143,7 @@ export const CreatePersonForm = ({ personId }) => {
                     handleRelation={handleRelation}
                     relation={'newPerson'}
                 />
-                <DatesForm 
+                {/* <DatesForm 
                     dob={dob}
                     setDob={setDob}
                     dod={dod}
@@ -176,7 +176,7 @@ export const CreatePersonForm = ({ personId }) => {
                 <BioForm
                     bio={bio}
                     setBio={setBio}    
-                />
+                /> */}
 
 
                 <button type="submit">Submit</button>

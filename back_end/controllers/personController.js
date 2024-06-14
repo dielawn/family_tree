@@ -25,46 +25,26 @@ exports.create_name = async (req, res) => {
 //create
 exports.create_person = async (req, res) => {
     try {
-        console.log("Request body:", req.body); // Log the entire request body
-
-        const { name, bio, dob, events, dod, bio_father, bio_mother, adoptive_father, adoptive_mother, children } = req.body;
-
-        // Ensure name fields are provided
-        if (!name || !name.first || !name.last) {
-            return res.status(400).json({ message: 'Name with first and last fields is required' });
-        }
-        const newPersonName = { first: req.body.name.first, middle: req.body.name.middle, last: req.body.name.last, maiden: req.body.name.maiden, common: req.body.name.common}
-        // const savedName = await newPersonName.save();
-        // Construct the new Person instance
-        console.log('name', newPersonName)
-        const newPerson = new Person({
-            name: newPersonName,
+        const { name, bio, dob, dod, bioFather, bioMother, adoptiveFather, adoptiveMother, children } = req.body
+        const newPerson = {
+            name: { first: name.first, middle: name.middle, last: name.last, maiden: name.maiden, common: name.common },
             bio: bio || '',
             dob: dob || null,
             events: events || [],
             dod: dod || null,
-            bio_father: bio_father || null,
-            bio_mother: bio_mother || null,
-            adoptive_father: adoptive_father || null,
-            adoptive_mother: adoptive_mother || null,
-            children: children || [],
-            references: [],
-            photos: [],
-            audio: [],
-            video: []
-        });
-
-        console.log("New person to be saved:", newPerson);
-
-        // Check for existing person
-        const isMatch = await Person.findOne({ 'name.first': name.first, 'name.middle': name.middle, 'name.last': name.last });
-        if (isMatch) {
-            return res.status(400).json({ message: 'Person already in database' });
-        } else {
-            const savedPerson = await newPerson.save();
-            res.status(201).json({ message: 'Added new person to database', id: savedPerson._id });
+            bio_father: bioFather || null,
+            bio_mother: bioMother || null,
+            adoptive_father: adoptiveFather || null,
+            adoptive_mother: adoptiveMother || null,
+            children: children || []
+        };
+        const savedPerson = await newPerson.save();
+        if (savedPerson) {
+            console.log(`Saved person: ${savedPerson._id}`)
+            return res.status(201).json({ message: 'Success creating person', id: savedPerson._id})
         }
-    } catch (error) {
+        res.status(400).json({ message: 'Failed to save person' })
+        } catch (error) {
         console.error("Error creating person:", error);
         res.status(500).json({ message: `Error creating person: ${error.message}` });
     }
