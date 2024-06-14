@@ -21,7 +21,7 @@ export const AuthUser = ({ user, userId, personId }) => {
         {decoded ? (
             <div>
                 <button onClick={() => setTreeVis(!treeVis)}>View Family Tree</button>
-                {treeVis && < FamilyTree />}
+                {/* {treeVis && < FamilyTree />} */}
                 <h2>Welcome {decoded.username}</h2>
                 <p>USER ID: {decoded.id} </p>
                 {decoded.person && <p>Person ID: {decoded.person.id}</p>}

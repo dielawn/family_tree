@@ -33,12 +33,12 @@ exports.create_person = async (req, res) => {
         if (!name || !name.first || !name.last) {
             return res.status(400).json({ message: 'Name with first and last fields is required' });
         }
-        const newPersonName = new Name({ first: req.body.name.first, middle: req.body.name.middle, last: req.body.name.last, maiden: req.body.name.maiden, common: req.body.name.common})
-        const savedName = await newPersonName.save();
+        const newPersonName = { first: req.body.name.first, middle: req.body.name.middle, last: req.body.name.last, maiden: req.body.name.maiden, common: req.body.name.common}
+        // const savedName = await newPersonName.save();
         // Construct the new Person instance
         console.log('name', newPersonName)
         const newPerson = new Person({
-            name: savedName,
+            name: newPersonName,
             bio: bio || '',
             dob: dob || null,
             events: events || [],
