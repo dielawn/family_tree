@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from 'axios';
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -8,6 +8,8 @@ export const Login = ({ handleUser }) => {
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
 
+
+
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
@@ -16,7 +18,7 @@ export const Login = ({ handleUser }) => {
             handleUser();
             setMessage('Login successful');
         } catch (error) {
-            setMessage(`Login Failed: ${error.res.data.message}`);
+            setMessage(`Login Failed: ${error.res}`);
         }
     };
 

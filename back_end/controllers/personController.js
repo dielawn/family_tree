@@ -25,8 +25,8 @@ exports.create_name = async (req, res) => {
 //create
 exports.create_person = async (req, res) => {
     try {
-        const { name, bio, dob, dod, bioFather, bioMother, adoptiveFather, adoptiveMother, children } = req.body
-        const newPerson = {
+        const { name, bio, dob, dod, bioFather, bioMother, adoptiveFather, adoptiveMother, children, events } = req.body
+        const newPerson = new Person ({
             name: { first: name.first, middle: name.middle, last: name.last, maiden: name.maiden, common: name.common },
             bio: bio || '',
             dob: dob || null,
@@ -37,14 +37,14 @@ exports.create_person = async (req, res) => {
             adoptive_father: adoptiveFather || null,
             adoptive_mother: adoptiveMother || null,
             children: children || []
-        };
+        });
         const savedPerson = await newPerson.save();
         if (savedPerson) {
             console.log(`Saved person: ${savedPerson._id}`)
             return res.status(201).json({ message: 'Success creating person', id: savedPerson._id})
         }
         res.status(400).json({ message: 'Failed to save person' })
-        } catch (error) {
+    } catch (error) {
         console.error("Error creating person:", error);
         res.status(500).json({ message: `Error creating person: ${error.message}` });
     }

@@ -14,11 +14,8 @@ export const Register = () => {
         e.preventDefault();
         try {
             const res = await axios.post(`${apiBaseUrl}/register`, { 
-                params: {username, password, confirmPwd,
-                headers: { 
-                    Authorization: `Bearer ${token}`
-                }
-                } });
+                params: {username, password, confirmPwd, }
+            });
             if (res.status === 201) {
                 setMessage('Registration successful');
             }

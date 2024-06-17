@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const nameSchema = new Schema({
     first: { type: String, },
     middle: { type: String, },
-    last: { type: String, },
+    last: { type: String },
     maiden: { type: String},
     common: { type: String },
 });
@@ -12,12 +12,20 @@ const nameSchema = new Schema({
 const mediaSchema = new Schema({
     url: { type: String, required: true },
     description: { type: String },
-    date: { type: Date }
+    upload_date: { type: Date }
 });
 
 const eventSchema = new Schema({
-    discription: { type: String, required: true},
-    date: { type: Date, required: true}
+    description: { type: String, required: true },
+    date: { type: Date, required: true }
+});
+
+const childSchema = new Schema({
+    name: { type: String, required: true },
+    dob: { type: Date },
+    dod: { type: Date },
+    father: { type: Schema.Types.ObjectId, ref: 'Person' },
+    mother: { type: Schema.Types.ObjectId, ref: 'Person' },
 });
 
 const personSchema = new Schema({
@@ -26,19 +34,19 @@ const personSchema = new Schema({
     dob: { type: Date, },
     events: [eventSchema],
     dod: { type: Date, },
-    bio_father: { type: Schema.Types.ObjectId, ref: 'Person' }, 
-    bio_mother: { type: Schema.Types.ObjectId, ref: 'Person' },
-    adoptive_father: { type: Schema.Types.ObjectId, ref: 'Person' },
-    adoptive_mother: { type: Schema.Types.ObjectId, ref: 'Person' },
-    children: [{ type: Schema.Types.ObjectId, ref: 'Person' }],
-    refrences: [mediaSchema],
+    father: { type: Schema.Types.ObjectId, ref: 'Person' }, 
+    mother: { type: Schema.Types.ObjectId, ref: 'Person' },
+    adoptive_father_name: { type: String },
+    adoptive_mother_name: { type: String },
+    children: [childSchema],
+    references: [mediaSchema],
     photos: [mediaSchema],
     audio: [mediaSchema],
     video: [mediaSchema]
 });
 
-const Person = mongoose.model('Person', personSchema)
-const Name = mongoose.model('Name', nameSchema)
+const Person = mongoose.model('Person', personSchema);
+const Name = mongoose.model('Name', nameSchema);
 
 module.exports = Person;
 module.exports = Name;
