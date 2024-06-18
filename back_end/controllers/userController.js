@@ -17,6 +17,7 @@ exports.login = async (req, res) => {
     const { username, password } = req.body;
    try {
     // find user
+    console.log(username, password)
     const user = await User.findOne({ username });
     if (!user) {
         return res.status(401).json({ message: 'Invalid username or password' })
@@ -33,7 +34,7 @@ exports.login = async (req, res) => {
         expiresIn: '1h',
     });
 
-    res.status(200).json({ message: 'Login successful', token });    
+    res.status(200).json({ message: 'Login successful', token: token });    
 
     } catch (error) {
         res.status(500).json({ message: `Server error: ${error.message}` })
@@ -66,7 +67,7 @@ exports.create_user = [
         }
         try {
             const { username, password } = req.body;
-
+            console.log(username, password)
             // Check for existing user
             const existingUser = await User.findOne({ username });
             if (existingUser) {
@@ -77,7 +78,7 @@ exports.create_user = [
             const hashedPassword = await bcrypt.hash(password, 10);
 
             // Create new user
-            const newUser = new User({ username, password: hashedPassword });
+            const newUser = new User({ username, password: hashedPassword, });
             const savedUser = await newUser.save();
 
             res.status(201).json({ message: 'New user created', id: savedUser._id });

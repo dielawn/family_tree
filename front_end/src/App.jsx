@@ -13,8 +13,8 @@ const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 function App() {
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState('');
-  const [userId, setUserId] = useState(null)
-  const [personId, setPersonId] = useState(null)
+  const [userId, setUserId] = useState(null);
+  const [personId, setPersonId] = useState(null);
   const [registerVis, setRegisterVis] = useState(false);
 
   const handleUser = async () => {
