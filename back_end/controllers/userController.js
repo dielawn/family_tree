@@ -17,7 +17,7 @@ exports.login = async (req, res) => {
     const { username, password } = req.body;
    try {
     // find user
-    console.log(username, password)
+   
     const user = await User.findOne({ username });
     if (!user) {
         return res.status(401).json({ message: 'Invalid username or password' })
@@ -67,7 +67,7 @@ exports.create_user = [
         }
         try {
             const { username, password } = req.body;
-            console.log(username, password)
+            
             // Check for existing user
             const existingUser = await User.findOne({ username });
             if (existingUser) {
@@ -128,6 +128,27 @@ exports.update_user = async (req, res) => {
          // User object without password
         const { password: _, ...userWithoutPassword } = updatedUser.toObject();
         res.status(200).json({ message: 'User updated', user: userWithoutPassword })
+
+    } catch (error) {
+        res.status(500).json({ message: `Error updating user: ${error.message}` });
+    }
+};
+
+// add person profile to user
+exports.user_add_person = async (req, res) => {
+    try {
+        const userToUpdate = await User.findById(req.params.id)
+        if (!userToUpdate) {
+            return res.status(404).json({ message: 'User not found' })
+        }
+        
+        const person = req.body
+        if (person) {
+           userToUpdate.person = person;
+           await userToUpdate.save();
+           return res.status(200).json({ message: 'User person updated' })
+        }
+        return res.status(404).json({ message: 'Invalid person' })
 
     } catch (error) {
         res.status(500).json({ message: `Error updating user: ${error.message}` });

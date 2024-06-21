@@ -29,12 +29,18 @@ const childSchema = new Schema({
 });
 
 const personSchema = new Schema({
-    name:  nameSchema ,
+    name: {
+      first: { type: String },
+      middle: { type: String },
+      last: { type: String },
+      maiden: { type: String },
+      common: { type: String }
+    },
     bio: { type: String },
-    dob: { type: Date, },
+    dob: { type: Date },
     events: [eventSchema],
-    dod: { type: Date, },
-    father: { type: Schema.Types.ObjectId, ref: 'Person' }, 
+    dod: { type: Date },
+    father: { type: Schema.Types.ObjectId, ref: 'Person' },
     mother: { type: Schema.Types.ObjectId, ref: 'Person' },
     adoptive_father_name: { type: String },
     adoptive_mother_name: { type: String },
@@ -43,10 +49,10 @@ const personSchema = new Schema({
     photos: [mediaSchema],
     audio: [mediaSchema],
     video: [mediaSchema]
-});
+  });
 
 const Person = mongoose.model('Person', personSchema);
-const Name = mongoose.model('Name', nameSchema);
+// const Name = mongoose.model('Name', nameSchema);
 
 module.exports = Person;
-module.exports = Name;
+// module.exports = Name;

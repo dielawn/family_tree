@@ -1,32 +1,32 @@
 const Person = require('../models/person');
-const Name = require('../models/person')
+// const Name = require('../models/person')
 
 //create name
-exports.create_name = async (req, res) => {
-    try {
-        console.log('req.body', req.body)
-        const { name } = req.body;
+// exports.create_name = async (req, res) => {
+//     try {
+//         console.log('req.body', req.body)
+//         const { name } = req.body;
 
-        // Ensure name fields are provided
-        if (!name || !name.first || !name.last) {
-            return res.status(400).json({ message: 'Name with first and last fields is required' });
-        }
-        console.log('name stuff', name, name.first, name.last)
-        const newPersonName = new Name({ first: req.body.name.first, middle: req.body.name.middle, last: req.body.name.last, maiden: req.body.name.maiden, common: req.body.name.common})
-        await newPersonName.save();
-        res.status(201).json({ message: 'Name saved', name: newPersonName})
-        console.log(newPersonName)
-    } catch (error) {
-        console.error("Error creating Name:", error);
-        res.status(500).json({ message: `Error creating Name: ${error.message}` });
-    }
-};
+//         // Ensure name fields are provided
+//         if (!name || !name.first || !name.last) {
+//             return res.status(400).json({ message: 'Name with first and last fields is required' });
+//         }
+//         console.log('name stuff', name, name.first, name.last)
+//         const newPersonName = new Name({ first: req.body.name.first, middle: req.body.name.middle, last: req.body.name.last, maiden: req.body.name.maiden, common: req.body.name.common})
+//         await newPersonName.save();
+//         res.status(201).json({ message: 'Name saved', name: newPersonName})
+//         console.log(newPersonName)
+//     } catch (error) {
+//         console.error("Error creating Name:", error);
+//         res.status(500).json({ message: `Error creating Name: ${error.message}` });
+//     }
+// };
 
 //create
 exports.create_person = async (req, res) => {
     try {
         const { name, bio, dob, dod, bioFather, bioMother, adoptiveFather, adoptiveMother, children, events } = req.body
-        const newPerson = new Person ({
+        const newPerson = new Person({
             name: { first: name.first, middle: name.middle, last: name.last, maiden: name.maiden, common: name.common },
             bio: bio || '',
             dob: dob || null,
@@ -39,11 +39,12 @@ exports.create_person = async (req, res) => {
             children: children || []
         });
         const savedPerson = await newPerson.save();
+        console.log("req.body:", req.body);
         if (savedPerson) {
-            console.log(`Saved person: ${savedPerson._id}`)
-            return res.status(201).json({ message: 'Success creating person', id: savedPerson._id})
+            console.log(`Saved person: ${savedPerson._id}`);
+            return res.status(201).json({ message: 'Success creating person', id: savedPerson._id });
         }
-        res.status(400).json({ message: 'Failed to save person' })
+        res.status(400).json({ message: 'Failed to save person' });
     } catch (error) {
         console.error("Error creating person:", error);
         res.status(500).json({ message: `Error creating person: ${error.message}` });

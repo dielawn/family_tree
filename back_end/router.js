@@ -24,6 +24,8 @@ router.put('/user/:id', verifyToken, userController.update_user);
 //delete user
 router.delete('/user/:id', verifyToken, userController.delete_user);
 
+//add person to user
+router.post('/user/:id', verifyToken, userController.user_add_person);
 
 
     // PERSON STUFF //
@@ -34,7 +36,7 @@ router.post('/person', verifyToken, personController.create_person);
 // view a person by id
 router.get('/person/:id', verifyToken, personController.view_person);
 // search for a person by name
-router.get('/person/search', personController.search_person_by_name);
+router.get('/person/search', verifyToken, personController.search_person_by_name);
 // all persons
 router.get('/persons', verifyToken, personController.all_persons)
 

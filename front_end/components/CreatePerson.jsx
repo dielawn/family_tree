@@ -40,6 +40,8 @@ export const CreatePersonForm = ({ personId }) => {
     //biography
     const [bio, setBio] = useState('');
 
+    const [searchResults, setSearchResults] = useState([]);
+
     const token = localStorage.getItem('token')
     
     useEffect(() => {
@@ -50,6 +52,7 @@ export const CreatePersonForm = ({ personId }) => {
     const handleSubmitPerson = async (e) => {
         e.preventDefault();
         try {
+            
             const personName = { first, middle, last, maiden, common };
             const newPerson = {
                 name: personName,
@@ -64,20 +67,28 @@ export const CreatePersonForm = ({ personId }) => {
                 children: children || []
             };
     
-            console.log("newPerson to be sent:", newPerson); // Log the data before sending
-    
-            const res = await axios.post(`${apiBaseUrl}/person`, newPerson, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
+            console.log("newPerson to be sent:", newPerson); 
+            const isMatch = await searchName(personName.first, personName.middle, personName.last)
+            if (isMatch) {
+                //render array of matches with select buttons or radios
+                return
+            } else {
+                const res = await axios.post(`${apiBaseUrl}/person`, newPerson, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
             });
     
             if (res.status === 201) {
                 setMessage(`Success: ${res.data.message}`);
                 console.log(`created person id: ${res.data.id}`);
+                
             } else {
                 setMessage(`Failed submit person: ${res.data.message}`);
             }
+
+            }
+
         } catch (error) {
             if (error.response) {
                 console.error("Error data:", error.response.data);
@@ -91,6 +102,32 @@ export const CreatePersonForm = ({ personId }) => {
             console.error("Error config:", error.config);
         }
     };
+
+    const searchName = async (first, middle, last) => {
+        try {
+          const res = await axios.get(`${apiBaseUrl}/person/search`, {
+            params: { first, middle, last },
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+      
+          if (res.status === 404) {
+            setMessage(res.data.message);
+            return false;
+          } else if (res.status === 200) {
+            setMessage(`${res.data.length} Matches found`);
+            setSearchResults(res.data);
+            return true;
+          } else {
+            setMessage('Error searching for matches');
+            return false;
+          }
+      
+        } catch (error) {
+          setMessage(`Error checking for duplicates: ${error}`);
+        }
+      };
     
     
 
