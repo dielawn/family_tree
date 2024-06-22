@@ -10,8 +10,12 @@ const db = require('./config/database');
 const port = process.env.PORT
 
 const app = express();
+app.set('env', 'development');
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173',
+  methods: ['GET', 'POST'],
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 

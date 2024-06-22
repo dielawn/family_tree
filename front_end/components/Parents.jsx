@@ -27,7 +27,7 @@ export const ParentsForm = ({ bioFather, setBioFather, bioMother, setBioMother, 
         try {
             //check if person exists            
             console.log(first)
-            const res = await axios.get(`${apiBaseUrl}/person/search`, { first, middle, last,},{
+            const res = await axios.get(`${apiBaseUrl}/search`, { first, middle, last,},{
                 headers: { 
                     Authorization: `Bearer ${token}`
                 }

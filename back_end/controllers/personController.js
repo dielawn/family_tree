@@ -76,9 +76,9 @@ exports.search_person_by_name = async (req, res) => {
         if (first) searchCriteria['name.first'] = { $regex: first, $options: 'i' };
         if (middle) searchCriteria['name.middle'] = { $regex: middle, $options: 'i' };
         if (last) searchCriteria['name.last'] = { $regex: last, $options: 'i' };
- 
+        
         const persons = await Person.find(searchCriteria)
-
+        console.log(`Persons ${persons.length}`)
         if (persons.length === 0) {
             return res.status(404).json({ message: 'No matching persons found'});
         } else {

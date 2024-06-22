@@ -46,9 +46,11 @@ export const CreatePersonForm = ({ personId }) => {
     const decoded =jwtDecode(token)
     
     useEffect(() => {
-        
-        console.log('name', first, middle, last)
+        searchName();
+        console.log('name', first, middle, last, 'search results: ', searchResults)
     }, [first, middle, last])
+
+
 
     const handleSubmitPerson = async (e) => {
         e.preventDefault();
@@ -70,7 +72,7 @@ export const CreatePersonForm = ({ personId }) => {
     
             console.log("newPerson to be sent:", newPerson); 
             console.log("newPerson full name:", personName.first, personName.middle, personName.last); 
-            const isMatch = await searchName();
+            let isMatch = await searchName();
             if (isMatch) {
                 //render array of matches with select buttons or radios
                 setMessage('Search data set')
@@ -107,12 +109,17 @@ export const CreatePersonForm = ({ personId }) => {
 
     const searchName = async () => {
         try {
-            
-            const res = await axios.get(`${apiBaseUrl}/person/search`, { first, middle, last,},{
+            const res = await axios.get(`${apiBaseUrl}/search`, {
+                params: {
+                        first,
+                        middle,
+                        last
+                },
                 headers: { 
                     Authorization: `Bearer ${token}`
                 }
             });
+          
         
             if (res.status === 404) {
               setMessage(res.data.message);

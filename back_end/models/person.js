@@ -1,14 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const nameSchema = new Schema({
-    first: { type: String, },
-    middle: { type: String, },
-    last: { type: String },
-    maiden: { type: String},
-    common: { type: String },
-});
-
 const mediaSchema = new Schema({
     url: { type: String, required: true },
     description: { type: String },

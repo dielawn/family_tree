@@ -36,7 +36,7 @@ router.post('/person', verifyToken, personController.create_person);
 // view a person by id
 router.get('/person/:id', verifyToken, personController.view_person);
 // search for a person by name
-router.get('/person/search', verifyToken, personController.search_person_by_name);
+router.get('/search', verifyToken, personController.search_person_by_name);
 // all persons
 router.get('/persons', verifyToken, personController.all_persons)
 
