@@ -8,7 +8,7 @@ import { DatesForm } from "./Dates";
 import { ParentsForm } from "./Parents";
 import { ChildrenForm } from "./ChildrenForm";
 import { BioForm } from "./BioForm";
-
+import { jwtDecode } from "jwt-decode";
 
 
 export const CreatePersonForm = ({ personId }) => {
@@ -43,6 +43,7 @@ export const CreatePersonForm = ({ personId }) => {
     const [searchResults, setSearchResults] = useState([]);
 
     const token = localStorage.getItem('token')
+    const decoded =jwtDecode(token)
     
     useEffect(() => {
         
@@ -68,10 +69,11 @@ export const CreatePersonForm = ({ personId }) => {
             };
     
             console.log("newPerson to be sent:", newPerson); 
-            const isMatch = await searchName(personName.first, personName.middle, personName.last)
+            console.log("newPerson full name:", personName.first, personName.middle, personName.last); 
+            const isMatch = await searchName();
             if (isMatch) {
                 //render array of matches with select buttons or radios
-                return
+                setMessage('Search data set')
             } else {
                 const res = await axios.post(`${apiBaseUrl}/person`, newPerson, {
                     headers: {
@@ -103,31 +105,29 @@ export const CreatePersonForm = ({ personId }) => {
         }
     };
 
-    const searchName = async (first, middle, last) => {
+    const searchName = async () => {
         try {
-          const res = await axios.get(`${apiBaseUrl}/person/search`, {
-            params: { first, middle, last },
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-      
-          if (res.status === 404) {
-            setMessage(res.data.message);
-            return false;
-          } else if (res.status === 200) {
-            setMessage(`${res.data.length} Matches found`);
-            setSearchResults(res.data);
-            return true;
-          } else {
-            setMessage('Error searching for matches');
-            return false;
+            
+            const res = await axios.get(`${apiBaseUrl}/person/search`, { first, middle, last,},{
+                headers: { 
+                    Authorization: `Bearer ${token}`
+                }
+            });
+        
+            if (res.status === 404) {
+              setMessage(res.data.message);
+              return;
+            } else if (res.status === 200) {
+              setMessage(`${res.data.length} Matches found`);
+              setSearchResults(res.data);
+            } else {
+              setMessage('Error searching for matches');
+            }
+        
+          } catch (error) {
+            setMessage(`Error checking for duplicates: ${error}`);
           }
-      
-        } catch (error) {
-          setMessage(`Error checking for duplicates: ${error}`);
-        }
-      };
+        };
     
     
 

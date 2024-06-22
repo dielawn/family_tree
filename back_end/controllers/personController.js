@@ -39,9 +39,9 @@ exports.create_person = async (req, res) => {
             children: children || []
         });
         const savedPerson = await newPerson.save();
-        console.log("req.body:", req.body);
+        // console.log("req.body:", req.body);
         if (savedPerson) {
-            console.log(`Saved person: ${savedPerson._id}`);
+            // console.log(`Saved person: ${savedPerson._id}`);
             return res.status(201).json({ message: 'Success creating person', id: savedPerson._id });
         }
         res.status(400).json({ message: 'Failed to save person' });
@@ -67,8 +67,10 @@ exports.view_person = async (req, res) => {
 };
 //read by name
 exports.search_person_by_name = async (req, res) => {
+    console.log('query:', req.query)
     try {
         const [ first, middle, last ] = req.query;
+        console.log('query:', req.query)
         
         let searchCriteria = {};
         if (first) searchCriteria['name.first'] = { $regex: first, $options: 'i' };
