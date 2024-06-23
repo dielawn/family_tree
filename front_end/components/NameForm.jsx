@@ -15,7 +15,7 @@ export const NameForm = ({ relation, first, setFirst, middle, setMiddle, last, s
         setLoading(true)
         
         try {
-            const res = await axios.get(`${apiBaseUrl}/persons/search`, {
+            const res = await axios.get(`${apiBaseUrl}/search`, {
                 params: {
                         first,
                         middle,

@@ -67,26 +67,28 @@ exports.view_person = async (req, res) => {
 };
 //read by name
 exports.search_person_by_name = async (req, res) => {
-    console.log('query:', req.query)
     try {
-        const [ first, middle, last ] = req.query;
-        console.log('query:', req.query)
-        
-        let searchCriteria = {};
-        if (first) searchCriteria['name.first'] = { $regex: first, $options: 'i' };
-        if (middle) searchCriteria['name.middle'] = { $regex: middle, $options: 'i' };
-        if (last) searchCriteria['name.last'] = { $regex: last, $options: 'i' };
-        
-        const persons = await Person.find(searchCriteria)
-        console.log(`Persons ${persons.length}`)
+        console.log('query before try:', req.query.first);
+
+        const searchCriteria = {
+          'name.first': { $regex: new RegExp(req.query.first, 'i') },
+          'name.middle': { $regex: new RegExp(req.query.middle, 'i') },
+          'name.last': { $regex: new RegExp(req.query.last, 'i') }
+        };
+        console.log(`Search criteria: ${JSON.stringify(searchCriteria)}`);
+        const persons = await Person.find(searchCriteria);
+        console.log(`Persons ${persons.length}`);
         if (persons.length === 0) {
-            return res.status(404).json({ message: 'No matching persons found'});
+            return res.status(404).json({ message: 'No matching persons found' });
         } else {
             res.status(200).json({ message: 'Persons found', persons });
         }
 
     } catch (error) {
+        console.error(`Error searching persons: ${error.message}`);
         res.status(500).json({ message: `Error searching persons: ${error.message}` });
+    } finally {
+        console.log('Finally block');
     }
 };
 //read all persons

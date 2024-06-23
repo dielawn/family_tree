@@ -72,10 +72,13 @@ export const CreatePersonForm = ({ personId }) => {
     
             console.log("newPerson to be sent:", newPerson); 
             console.log("newPerson full name:", personName.first, personName.middle, personName.last); 
-            let isMatch = await searchName();
-            if (isMatch) {
+            
+            console.log(`searchResults: ${searchResults}`)
+            if (searchResults.length > 0) {
                 //render array of matches with select buttons or radios
+                console.log(`name in database?: ${isMatch}`)
                 setMessage('Search data set')
+                return
             } else {
                 const res = await axios.post(`${apiBaseUrl}/person`, newPerson, {
                     headers: {
@@ -166,10 +169,7 @@ export const CreatePersonForm = ({ personId }) => {
         setChildren(prevChildren => [...prevChildren, childId])
     }
 
-    useEffect(() => {
-        console.log(first)
-    }, [first])
-
+   
     return (
         <div>
             <form onSubmit={handleSubmitPerson}>
