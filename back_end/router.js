@@ -42,6 +42,12 @@ router.get('/persons', verifyToken, personController.all_persons)
 
 // update person
 router.put('/person/:id', verifyToken, personController.update_person);
+// update events
+router.put('/events/:id', verifyToken, personController.update_events);
+//update dob
+router.put('/dob/:id', verifyToken, personController.update_dob);
+//update dod
+router.put('/dod/:id', verifyToken, personController.update_dod);
 
 // delete person
 router.delete('/person/:id', verifyToken, personController.delete_person);

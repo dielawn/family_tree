@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import validateDate from '../utils/utils';
 import axios from 'axios'
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 const BirthForm = ({ dob, setDob }) => {
+    const [message, setMessage] = useState('');
     const handleBirth = () => {
         console.log('this birth has not been handled')
     }
@@ -27,7 +29,7 @@ const BirthForm = ({ dob, setDob }) => {
 }
 
 const DeathForm = ({ dod, setDod }) => {
-
+    const [message, setMessage] = useState('');
     const handleDeath = () => {
         console.log('this death has not been handled')
 
@@ -52,8 +54,18 @@ const DeathForm = ({ dod, setDod }) => {
     )
 }
 
-const updateDBEvents = async () => {
+const updateDBEvents = async (events, setMessage) => {
     try {
+        
+        const res = await axios.put(`/events/${selectedPerson}`, events, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        if (res.status === 200) {
+            setMessage(`Success updating events`)
+        }
+        setMessage('Error updating events')
 
     } catch (error) {
         setMessage(`Error: ${error.message}`)
@@ -87,8 +99,9 @@ const EventsForm = ({ events, setEvents }) => {
         setMessage('Event added successfully')     
     } 
 
-    
-
+    useEffect(() => {   
+        updateDBEvents(events, setMessage)
+    }, events)
 
     return (
         <fieldset>
@@ -122,66 +135,14 @@ const EventsForm = ({ events, setEvents }) => {
 const DatesForm = ({ dob, setDob, events, setEvents, dod, setDod }) => {
     const [message, setMessage] = useState('');
 
-    const [eventDesc, setEventDesc] = useState('');
-    const [eventDate, setEventDate] = useState('');
     
-    const handleNewEvent = (e) => {
-        e.preventDefault();
-       if (eventDesc !== '' && eventDate !== '') {
-        if (!validateDate(eventDate)) {
-            setMessage('Invalid date format. Please use YYYY-MM-DD.');
-            setTimeout(() => setMessage(''), 3000);
-            return
-        }
-        const tempArray = [...events]
-        tempArray.push({ description: eventDesc, date: eventDate })
-        setEvents(tempArray);
-        setEventDesc('');
-        setEventDate('');
-        setMessage('Event added successfully')
-        setTimeout(() => setMessage(''), 3000); 
-       } else {
-        setMessage('Please fill out both fields')
-        setTimeout(() => setMessage(''), 3000); 
-       }
-    };
 
     return (
         <fieldset>
-
-            <legend>Dates of interest</legend>
-            <label htmlFor="dobInput">Date of birth</label>    
-            <input 
-                type="text"
-                id="dobInput"
-                value={dob}
-                onChange={(e) => setDob(e.target.value)}
-            />
-            
-            <label htmlFor="dodInput">Date of death</label>
-            <input 
-                type="text"
-                id="dodInput"
-                value={dod}
-                onChange={(e) => setDod(e.target.value)}
-            />
-
-            <label htmlFor="eventDescInput">Life event</label>
-            <input 
-                type="text"
-                id="eventDescInput"
-                value={eventDesc}
-                onChange={(e) => setEventDesc(e.target.value)}    
-            />
-            <label htmlFor="eventDateInput">Date of event</label>
-            <input 
-                type="text"
-                id="eventDateInput"
-                value={eventDate}
-                onChange={(e) => setEventDate(e.target.value)}    
-            />
-           
-            <button onClick={(e) => handleNewEvent(e)}>Add Event</button>
+            <BirthForm dob={dob} setDob={setDob} />
+            <EventsForm events={events} setEvents={setEvents} />
+            <DeathForm dod={dod} setDod={setDod} />
+      
             <p>{message}</p>
         
         </fieldset>
