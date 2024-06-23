@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
+
+import { ProfileCard } from './ProfileCard';
 import axios from "axios";
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
-export const NameForm = ({ relation, first, setFirst, middle, setMiddle, last, setLast, maiden, setMaiden, common, setCommon, handleRelation }) => {
+export const NameForm = ({ relation, first, setFirst, middle, setMiddle, last, setLast, maiden, setMaiden, common, setCommon, handleRelation, setSelectedPerson }) => {
     const [message, setMessage] = useState('');
     const [matches, setMatches] = useState([]);
     const [loading, setLoading] = useState(false);
+
+    const token = localStorage.getItem('token')
 
     const findMatch = async () => {
         if (!first && !middle && !last) {
@@ -25,11 +29,18 @@ export const NameForm = ({ relation, first, setFirst, middle, setMiddle, last, s
                     Authorization: `Bearer ${token}`
                 }
             });
+            console.log(res.status)
+        
             if (res.status === 200) {
-                setMessage('Match or matches found')
-                setMatches(res.data.persons)
-            }
-            setMessage('No Matches found')
+                setMessage(`${res.data.persons.length} ${res.data.message}`);
+                setMatches(res.data.persons);
+              } else if (res.status === 404) {
+                setMessage('No mathes in database');
+                setMatches([]);
+              } else {
+                setMessage('Error searching for matches');
+                setMatches([]);
+              }
 
         } catch (error) {
             setMessage(`Error: ${error.message}`)
@@ -37,14 +48,17 @@ export const NameForm = ({ relation, first, setFirst, middle, setMiddle, last, s
         setLoading(false)
     };
 
-    useEffect(() => {
-        
+    useEffect(() => {        
         const timeoutId = setTimeout(() => {
             findMatch();
         }, 500); // Debounce API calls by 500ms
-
         return () => clearTimeout(timeoutId); // Cleanup timeout on component unmount or value change
     }, [first, middle, last]);
+
+    // Clears matches array when name form is edited
+    useEffect(() => {
+        return () => setMatches([]);
+      }, [first, middle, last]);
 
     return (
        <div>
@@ -93,9 +107,7 @@ export const NameForm = ({ relation, first, setFirst, middle, setMiddle, last, s
             ) : (
                 matches && matches.map((match) => (
                     <div key={match._id} className="matchesDiv"> 
-                        <p>{match.name.first} {match.name.middle} {match.name.last}</p>
-                        <p>ID {match._id}</p>
-                        <button onClick={() => handleRelation(relation, match._id)}>Select Person</button>
+                        <ProfileCard setSelectedPerson={setSelectedPerson} person={match}/>
                     </div>
                 ))
             )}

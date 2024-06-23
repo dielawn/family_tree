@@ -8,6 +8,8 @@ import { DatesForm } from "./Dates";
 import { ParentsForm } from "./Parents";
 import { ChildrenForm } from "./ChildrenForm";
 import { BioForm } from "./BioForm";
+
+
 import { jwtDecode } from "jwt-decode";
 
 
@@ -42,20 +44,38 @@ export const CreatePersonForm = ({ personId }) => {
 
     const [searchResults, setSearchResults] = useState([]);
 
+    const [selectedPerson, setSelectedPerson] = useState({});
+
+
     const token = localStorage.getItem('token')
     const decoded =jwtDecode(token)
     
-    useEffect(() => {
-        searchName();
-        console.log('name', first, middle, last, 'search results: ', searchResults)
-    }, [first, middle, last])
+   
+    const resetForms = () => {
+        clearName();
+        clearDate();
+    }
 
+    const clearName = () => {
+        setFirst('');
+        setMiddle('');
+        setLast('');
+        setMaiden('');
+        setCommon('');
+        setSearchResults([]);
+        setMessage('Cleared name form and search results');
+    }
+
+    const clearDate = () => {
+        setDob(null);
+        setDod(null);
+        setEvents([]);
+    }
 
 
     const handleSubmitPerson = async (e) => {
         e.preventDefault();
-        try {
-            
+        try {            
             const personName = { first, middle, last, maiden, common };
             const newPerson = {
                 name: personName,
@@ -68,34 +88,22 @@ export const CreatePersonForm = ({ personId }) => {
                 adoptive_father: adoptiveFather || null,
                 adoptive_mother: adoptiveMother || null,
                 children: children || []
-            };
-    
+            };        
             console.log("newPerson to be sent:", newPerson); 
             console.log("newPerson full name:", personName.first, personName.middle, personName.last); 
-            
-            console.log(`searchResults: ${searchResults}`)
-            if (searchResults.length > 0) {
-                //render array of matches with select buttons or radios
-                console.log(`name in database?: ${isMatch}`)
-                setMessage('Search data set')
-                return
-            } else {
-                const res = await axios.post(`${apiBaseUrl}/person`, newPerson, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-            });
-    
+                    
+            const res = await axios.post(`${apiBaseUrl}/person`, newPerson, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });        
             if (res.status === 201) {
                 setMessage(`Success: ${res.data.message}`);
-                console.log(`created person id: ${res.data.id}`);
-                
+                console.log(`created person id: ${res.data.id}`);          
+                resetForms();          
             } else {
                 setMessage(`Failed submit person: ${res.data.message}`);
-            }
-
-            }
-
+            }    
         } catch (error) {
             if (error.response) {
                 console.error("Error data:", error.response.data);
@@ -109,37 +117,6 @@ export const CreatePersonForm = ({ personId }) => {
             console.error("Error config:", error.config);
         }
     };
-
-    const searchName = async () => {
-        try {
-            const res = await axios.get(`${apiBaseUrl}/search`, {
-                params: {
-                        first,
-                        middle,
-                        last
-                },
-                headers: { 
-                    Authorization: `Bearer ${token}`
-                }
-            });
-          
-        
-            if (res.status === 404) {
-              setMessage(res.data.message);
-              return;
-            } else if (res.status === 200) {
-              setMessage(`${res.data.length} Matches found`);
-              setSearchResults(res.data);
-            } else {
-              setMessage('Error searching for matches');
-            }
-        
-          } catch (error) {
-            setMessage(`Error checking for duplicates: ${error}`);
-          }
-        };
-    
-    
 
     const handleRelation = async (relation, personId) => {
         switch (relation) {
@@ -186,8 +163,9 @@ export const CreatePersonForm = ({ personId }) => {
                     setCommon={setCommon}
                     handleRelation={handleRelation}
                     relation={'newPerson'}
+                    setSelectedPerson={setSelectedPerson}
                 />
-                {/* <DatesForm 
+                <DatesForm 
                     dob={dob}
                     setDob={setDob}
                     dod={dod}
@@ -195,7 +173,7 @@ export const CreatePersonForm = ({ personId }) => {
                     events={events}
                     setEvents={setEvents}
                 />
-                <ParentsForm
+                {/* <ParentsForm
                     bioFather={bioFather}
                     setBioFather={setBioFather}
                     bioMother={bioMother}
@@ -207,8 +185,8 @@ export const CreatePersonForm = ({ personId }) => {
                     adoptiveMother={adoptiveMother}
                     setAdoptiveMother={setAdoptiveMother}
                     handleRelation={handleRelation}
-                />
-                <ChildrenForm 
+                /> */}
+                {/* <ChildrenForm 
                     children={children}
                     setChildren={setChildren}
                     addToChildren={addToChildren}
@@ -216,16 +194,18 @@ export const CreatePersonForm = ({ personId }) => {
                     handleRelation={handleRelation}
                     isAdopted={isAdopted}
                     setIsAdopted={setIsAdopted}
-                />
-                <BioForm
+                /> */}
+                {/* <BioForm
                     bio={bio}
                     setBio={setBio}    
                 /> */}
 
 
-                <button type="submit">Submit</button>
+                <button type="submit">Submit New Person</button>
             </form>             
             <p>{message}</p>
+           
+            {selectedPerson && <p>Selected person id: {selectedPerson._id}</p>}
         </div>
     )
 }

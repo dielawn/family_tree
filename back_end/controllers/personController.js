@@ -68,14 +68,13 @@ exports.view_person = async (req, res) => {
 //read by name
 exports.search_person_by_name = async (req, res) => {
     try {
-        console.log('query before try:', req.query.first);
 
         const searchCriteria = {
           'name.first': { $regex: new RegExp(req.query.first, 'i') },
           'name.middle': { $regex: new RegExp(req.query.middle, 'i') },
           'name.last': { $regex: new RegExp(req.query.last, 'i') }
         };
-        console.log(`Search criteria: ${JSON.stringify(searchCriteria)}`);
+       
         const persons = await Person.find(searchCriteria);
         console.log(`Persons ${persons.length}`);
         if (persons.length === 0) {
@@ -101,6 +100,82 @@ exports.all_persons = async (req, res) => {
         res.status(404).json({message: 'No persons found in database'});
     } catch (error) {
         res.status(500).json({ message: `Error all persons: ${error.message}` });
+    }
+};
+
+exports.update_dob = async (req, res) => {
+    try {
+        const { id, dob } = req.params;
+        const personToUpdate = await Person.findById(id);
+
+        if (!personToUpdate) {
+            return res.status(404).json({ message: 'Person not found' });
+        }
+        if (!dob) {
+            return res.status(400).json({ message: 'Missing dob parameter' });
+        }
+
+        personToUpdate.dob = dob;
+        const updatedPerson = await personToUpdate.save();
+
+        res.status(200).json({ message: 'Person updated', id: updatedPerson._id });
+
+    } catch (error) {
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({ message: 'Invalid date format YYYY-MM-DD' });
+        }
+
+        res.status(500).json({ message: `Error updating dob: ${error.message}` });
+    }
+};
+
+exports.update_dod = async (req, res) => {
+    try {
+        const { id, dod } = req.params;
+        const personToUpdate = await Person.findById(id);
+        if (!personToUpdate) {
+            return res.status(404).json({ message: 'Person not found' });
+        }
+        if (!dod) {
+            return res.status(400).json({ message: 'Missing dod parameter' });
+        }
+
+        personToUpdate.dod = dod;
+        const updatedPerson = await personToUpdate.save();
+
+        res.status(200).json({ message: 'Person updated', id: updatedPerson._id });
+
+    } catch (error) {
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({ message: 'Invalid date format YYYY-MM-DD' });
+        }
+
+        res.status(500).json({ message: `Error updating dod: ${error.message}` });
+    }
+};
+
+exports.update_events = async (req, res) => {
+    try {
+        const { id, events } = req.params;
+        const personToUpdate = await Person.findById(id);
+        if (!personToUpdate) {
+            return res.status(404).json({ message: 'Person not found' });
+        }
+        if (!events) {
+            return res.status(400).json({ message: 'Events not valid' });
+        }
+
+        personToUpdate.events = events;
+        const updatedPerson = await personToUpdate.save();
+
+        res.status(200).json({ message: 'Person events updated', id: updatedPerson._id})
+
+    } catch (error) {
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({ message: 'Invalid date format YYYY-MM-DD' });
+        }
+
+        res.status(500).json({ message: `Error updating events: ${error.message}` });
     }
 };
 
