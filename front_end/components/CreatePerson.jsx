@@ -172,6 +172,7 @@ export const CreatePersonForm = ({ personId }) => {
                     setDod={setDod}
                     events={events}
                     setEvents={setEvents}
+                    selectedPerson={selectedPerson}
                 />
                 {/* <ParentsForm
                     bioFather={bioFather}

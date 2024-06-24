@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import validateDate from '../utils/utils';
 import axios from 'axios'
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+const token = localStorage.getItem('token')
 
-const BirthForm = ({ dob, setDob }) => {
+const BirthForm = ({ dob, setDob,  selectedPerson }) => {
     const [message, setMessage] = useState('');
     const handleBirth = () => {
         console.log('this birth has not been handled')
@@ -21,14 +22,14 @@ const BirthForm = ({ dob, setDob }) => {
                 placeholder='YYYY-MM-DD'
             />
 
-            <button type='button' onClick={() => handleBirth(e)}>Update Birth</button>
+            <button type='button' onClick={() => handleBirth()}>Update Birth</button>
             <p>{message}</p>
         
         </fieldset>
     )
 }
 
-const DeathForm = ({ dod, setDod }) => {
+const DeathForm = ({ dod, setDod,  selectedPerson  }) => {
     const [message, setMessage] = useState('');
     const handleDeath = () => {
         console.log('this death has not been handled')
@@ -47,104 +48,102 @@ const DeathForm = ({ dod, setDod }) => {
                 onChange={(e) => setDod(e.target.value)}
                 placeholder='YYYY-MM-DD'
             />           
-            <button  type='button' onClick={() => handleDeath(e)}>Add Event</button>
+            <button  type='button' onClick={() => handleDeath()}>Add Event</button>
             <p>{message}</p>
         
         </fieldset>
     )
 }
 
-const updateDBEvents = async (events, setMessage) => {
-    try {
-        
-        const res = await axios.put(`/events/${selectedPerson}`, events, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-        if (res.status === 200) {
-            setMessage(`Success updating events`)
-        }
-        setMessage('Error updating events')
 
-    } catch (error) {
-        setMessage(`Error: ${error.message}`)
-    }
-}
-
-const EventsForm = ({ events, setEvents }) => {
+const EventsForm = ({ events, setEvents,  selectedPerson }) => {
     const [message, setMessage] = useState('');
     const [eventDesc, setEventDesc] = useState('');
     const [eventDate, setEventDate] = useState('');
 
     const handleNewEvent = () => {
-
         if (eventDesc === '' || eventDate === '') {
-            setMessage('Please fill out both fields')
-            return
-        };
+            setMessage('Please fill out both fields');
+            return;
+        }
         if (!validateDate(eventDate)) {
             setMessage('Invalid date format. Please use YYYY-MM-DD.');
-            return
-        }   
+            return;
+        }
 
-        const tempArray = [...events]
-        tempArray.push({ description: eventDesc, date: eventDate })   
-        setEvents(tempArray);    
-           
-        // Clear form    
+        const tempArray = [...events];
+        tempArray.push({ description: eventDesc, date: eventDate });
+        setEvents(tempArray);
+
+        // Clear form
         setEventDesc('');
         setEventDate('');
-        
-        setMessage('Event added successfully')     
-    } 
 
-    useEffect(() => {   
-        updateDBEvents(events, setMessage)
-    }, events)
+        setMessage('Event added successfully');
+
+   
+    };
+
+    const updateDBEvents = async () => {
+        try {
+            console.log('selectedPerson:', selectedPerson._id);
+            console.log('events:', events);
+            const res = await axios.put(`/events/${selectedPerson._id}`, {
+                params: {
+                    events: events,
+                    id: selectedPerson._id
+                },
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            if (res.status === 200) {
+                setMessage(`Success updating events`);
+            } else {
+                setMessage('Error updating events');
+            }
+        } catch (error) {
+            setMessage(`Error: ${error.message}`);
+        }
+    };
+
 
     return (
         <fieldset>
-
             <legend>Dates of interest</legend>
-            
             <label htmlFor="eventDescInput">Life event</label>
-            
-            <textarea 
+            <textarea
                 type="text"
                 id="eventDescInput"
                 value={eventDesc}
-                onChange={(e) => setEventDesc(e.target.value)}    
+                onChange={(e) => setEventDesc(e.target.value)}
             />
             <label htmlFor="eventDateInput">Date of event</label>
-            <input 
+            <input
                 type="text"
                 id="eventDateInput"
                 value={eventDate}
-                onChange={(e) => setEventDate(e.target.value)}    
-                placeholder='YYYY-MM-DD'
+                onChange={(e) => setEventDate(e.target.value)}
+                placeholder="YYYY-MM-DD"
             />
-           
-            <button type='button' onClick={() => handleNewEvent()}>Add Event</button>
+            <button type="button" onClick={() => handleNewEvent()}>Add Event</button>
             <p>{message}</p>
-        
+            <button type='button' onClick={() => updateDBEvents()}>Update Events</button>
         </fieldset>
-    )
-}
+    );
+};
 
-const DatesForm = ({ dob, setDob, events, setEvents, dod, setDod }) => {
+const DatesForm = ({ dob, setDob, events, setEvents, dod, setDod, selectedPerson }) => {
     const [message, setMessage] = useState('');
 
     
 
     return (
         <fieldset>
-            <BirthForm dob={dob} setDob={setDob} />
-            <EventsForm events={events} setEvents={setEvents} />
-            <DeathForm dod={dod} setDod={setDod} />
-      
-            <p>{message}</p>
-        
+            <BirthForm dob={dob} setDob={setDob} selectedPerson={selectedPerson} />
+            <EventsForm events={events} setEvents={setEvents} selectedPerson={selectedPerson} />
+            <DeathForm dod={dod} setDod={setDod} selectedPerson={selectedPerson} />      
+            <p>{message}</p>        
         </fieldset>
     )
 };

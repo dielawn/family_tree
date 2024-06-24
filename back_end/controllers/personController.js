@@ -105,7 +105,7 @@ exports.all_persons = async (req, res) => {
 
 exports.update_dob = async (req, res) => {
     try {
-        const { id, dob } = req.params;
+        const { id, dob } = req.body;
         const personToUpdate = await Person.findById(id);
 
         if (!personToUpdate) {
@@ -131,7 +131,7 @@ exports.update_dob = async (req, res) => {
 
 exports.update_dod = async (req, res) => {
     try {
-        const { id, dod } = req.params;
+        const { id, dod } = req.body;
         const personToUpdate = await Person.findById(id);
         if (!personToUpdate) {
             return res.status(404).json({ message: 'Person not found' });
@@ -155,8 +155,11 @@ exports.update_dod = async (req, res) => {
 };
 
 exports.update_events = async (req, res) => {
+    console.log(req.params)
     try {
+        console.log('id and events:', req.params)
         const { id, events } = req.params;
+        console.log(id, events)
         const personToUpdate = await Person.findById(id);
         if (!personToUpdate) {
             return res.status(404).json({ message: 'Person not found' });

@@ -19,9 +19,11 @@ export const ProfileCard = ({ person, setSelectedPerson }) => {
                     {person.events && person.events.map((event, index) => (
                         <p key={index}>{formatDate(event.date)} - {event.description} </p>
                     ))}
+
                     {person.children && person.children.map((child) => (
                         <p key={child._id}>{child.name.first} {child.name.middle} {child.name.last}</p>
                     ))}
+                    
                     <button type='button' >Add Relation</button> {/* name form */}
                     <button type='button' >Add Event</button>  {/* dates form */}
                     <button type='button' >Edit Profile</button>  {/* profile form */}
