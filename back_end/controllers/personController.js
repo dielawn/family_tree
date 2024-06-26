@@ -155,9 +155,10 @@ exports.update_dod = async (req, res) => {
 };
 
 exports.update_events = async (req, res) => {
-    console.log(req.params)
+    console.log('params', req.params)
     try {
         console.log('id and events:', req.params)
+        console.log('events', req)
         const { id, events } = req.params;
         console.log(id, events)
         const personToUpdate = await Person.findById(id);

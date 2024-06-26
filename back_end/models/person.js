@@ -30,7 +30,10 @@ const personSchema = new Schema({
     },
     bio: { type: String },
     dob: { type: Date },
-    events: [eventSchema],
+    events: [{
+        description: { type: String, required: true },
+        date: { type: Date, required: true }
+    }],
     dod: { type: Date },
     father: { type: Schema.Types.ObjectId, ref: 'Person' },
     mother: { type: Schema.Types.ObjectId, ref: 'Person' },

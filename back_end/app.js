@@ -14,7 +14,7 @@ app.set('env', 'development');
 
 app.use(cors({
   origin: 'http://localhost:5173',
-  methods: ['GET', 'POST'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
 }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

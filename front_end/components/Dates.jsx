@@ -84,19 +84,53 @@ const EventsForm = ({ events, setEvents,  selectedPerson }) => {
    
     };
 
+    // const updateDBEvents = async () => {
+    //     console.log('id:', selectedPerson._id)
+    //     console.log('events:', events)
+    //     axios({
+    //         url: `${apiBaseUrl}/events/${selectedPerson._id}`,
+    //         method: 'PUT',
+    //         headers: {
+    //             Authorization: `Bearer ${token}`
+    //         },
+    //         params: {
+    //             events: events,
+    //             id: selectedPerson._id
+    //         },
+    //     })
+    //     .then((res) => { 
+    //         if (res.status === 200) {
+    //             setMessage(`Success updating events`);
+    //         } else {
+    //             setMessage('Error updating events');
+    //         }
+    //     })
+    //     .catch((err) => {
+    //         setMessage(`Error: ${err.message}`);
+    //     })
+    // }
+
     const updateDBEvents = async () => {
         try {
-            console.log('selectedPerson:', selectedPerson._id);
+            console.log('selectedPersonID:', selectedPerson._id);
             console.log('events:', events);
-            const res = await axios.put(`/events/${selectedPerson._id}`, {
-                params: {
-                    events: events,
-                    id: selectedPerson._id
+            console.log('token:', token)
+            const params = {
+                events: events,
+                
+            };
+            console.log('params:', params);
+            const res = await axios({
+                method: 'put',
+                url: `${apiBaseUrl}/events/${selectedPerson._id}`,
+                data: {
+                    params: { events }
                 },
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
+            console.log('Response:', res);
             if (res.status === 200) {
                 setMessage(`Success updating events`);
             } else {
