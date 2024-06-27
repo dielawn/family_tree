@@ -44,12 +44,35 @@ export const CreatePersonForm = ({ personId }) => {
 
     const [searchResults, setSearchResults] = useState([]);
 
-    const [selectedPerson, setSelectedPerson] = useState({});
+    const [selectedPerson, setSelectedPerson] = useState(null);
 
 
     const token = localStorage.getItem('token')
     const decoded =jwtDecode(token)
+
+    const handleSelectedPerson = () => {
+        console.log(selectedPerson)
+        if (selectedPerson) {
+            setFirst(selectedPerson.name.first)
+            setMiddle(selectedPerson.name.middle)
+            setLast(selectedPerson.name.last)
+            setMaiden(selectedPerson.name.maiden)
+            setCommon(selectedPerson.name.common)
+            setDob(selectedPerson.dob)
+            setEvents(selectedPerson.events)
+            setDod(selectedPerson.dod)
+            setBioFather(selectedPerson.bio_father)
+            setBioMother(selectedPerson.bio_mother)
+            setAdoptiveFather(selectedPerson.adoptive_father)
+            setAdoptiveMother(selectedPerson.adoptive_mother)
+            setChildren(selectedPerson.children)
+            setBio(selectedPerson.bio)
+        }
+    };
     
+    useEffect(() => {
+        handleSelectedPerson()
+    }, [selectedPerson])
    
     const resetForms = () => {
         clearName();
