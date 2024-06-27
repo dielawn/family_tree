@@ -111,20 +111,16 @@ const EventsForm = ({ events, setEvents,  selectedPerson }) => {
     // }
 
     const updateDBEvents = async () => {
-        try {
-            console.log('selectedPersonID:', selectedPerson._id);
-            console.log('events:', events);
-            console.log('token:', token)
-            const params = {
-                events: events,
-                
-            };
-            console.log('params:', params);
+        try {            
             const res = await axios({
                 method: 'put',
                 url: `${apiBaseUrl}/events/${selectedPerson._id}`,
                 data: {
-                    params: { events }
+                    params: {
+                        id: selectedPerson._id
+                    },
+                    events
+                    
                 },
                 headers: {
                     Authorization: `Bearer ${token}`

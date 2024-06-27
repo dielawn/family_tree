@@ -155,12 +155,13 @@ exports.update_dod = async (req, res) => {
 };
 
 exports.update_events = async (req, res) => {
-    console.log('params', req.params)
+    
     try {
-        console.log('id and events:', req.params)
-        console.log('events', req)
-        const { id, events } = req.params;
-        console.log(id, events)
+        console.log('params:', req.params);
+        console.log('events:', req.body.events);
+        const { id } = req.params;
+        const events = req.body.events;
+        console.log(id, events);
         const personToUpdate = await Person.findById(id);
         if (!personToUpdate) {
             return res.status(404).json({ message: 'Person not found' });
