@@ -105,8 +105,10 @@ exports.all_persons = async (req, res) => {
 
 exports.update_dob = async (req, res) => {
     try {
-        
-        const { id, dob } = req.body.params;
+        console.log('params', req.params)
+        console.log('body', req.body)
+        const { id } = req.params;
+        const { dob } = req.body;
         const personToUpdate = await Person.findById(id);
 
         if (!personToUpdate) {
@@ -123,7 +125,7 @@ exports.update_dob = async (req, res) => {
 
     } catch (error) {
         if (error.name === 'ValidationError') {
-            return res.status(400).json({ message: 'Invalid date format YYYY-MM-DD' });
+            return res.status(400).json({ message: 'Invalid date format dob YYYY-MM-DD' });
         }
 
         res.status(500).json({ message: `Error updating dob: ${error.message}` });
@@ -135,6 +137,7 @@ exports.update_dod = async (req, res) => {
         const { id } = req.params
         const { dod } = req.body;
         console.log(id, dod)
+
         const personToUpdate = await Person.findById(id);
         if (!personToUpdate) {
             return res.status(404).json({ message: 'Person not found' });
@@ -150,7 +153,7 @@ exports.update_dod = async (req, res) => {
 
     } catch (error) {
         if (error.name === 'ValidationError') {
-            return res.status(400).json({ message: 'Invalid date format MM/DD/YYYY' });
+            return res.status(400).json({ message: 'Invalid date format dod MM/DD/YYYY' });
         }
 
         res.status(500).json({ message: `Error updating dod: ${error.message}` });
@@ -161,7 +164,8 @@ exports.update_events = async (req, res) => {
     
     try {
         const { id } = req.params;
-        const events = req.body.events;
+        const events = req.body.events
+        console.log('id and events:', id, events)
 
         const personToUpdate = await Person.findById(id);
         if (!personToUpdate) {
@@ -177,10 +181,7 @@ exports.update_events = async (req, res) => {
         res.status(200).json({ message: 'Person events updated', id: updatedPerson._id})
 
     } catch (error) {
-        if (error.name === 'ValidationError') {
-            return res.status(400).json({ message: 'Invalid date format YYYY-MM-DD' });
-        }
-
+       
         res.status(500).json({ message: `Error updating events: ${error.message}` });
     }
 };
