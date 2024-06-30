@@ -1,60 +1,138 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import validateDate from '../utils/utils';
 import axios from 'axios'
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+
+
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+
 const token = localStorage.getItem('token')
 
 const BirthForm = ({ dob, setDob,  selectedPerson }) => {
     const [message, setMessage] = useState('');
-    const handleBirth = () => {
-        console.log('this birth has not been handled')
+    const handleBirth = async () => {
+        console.log('dob', dob)
+        if (!dob) {
+            setMessage('Please fill out both fields');
+            return;
+        }
+        try {            
+            const res = await axios({
+                method: 'put',
+                url: `${apiBaseUrl}/dob/${selectedPerson._id}`,
+                data: {
+                    params: {
+                        id: selectedPerson._id,
+                        dob
+                    }                            
+                },
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            
+            if (res.status === 200) {
+                setMessage(`Success updating dob`);
+            } else {
+                setMessage('Error updating dob');
+            }
+        } catch (error) {
+            setMessage(`Birth form error: ${error}`)
+        }
+
     }
     return (
         <fieldset>
-
-            <legend>Birth</legend>
-            <label htmlFor="dobInput">Date of birth</label>    
-            <input 
-                type="text"
-                id="dobInput"
-                value={dob}
-                onChange={(e) => setDob(e.target.value)}
-                placeholder='YYYY-MM-DD'
-            />
-
-            <button type='button' onClick={() => handleBirth()}>Update Birth</button>
-            <p>{message}</p>
-        
-        </fieldset>
+        <legend>Birth</legend>
+        <label htmlFor="dobInput">Date of birth</label>
+        <DatePicker
+            selected={dob}
+            onChange={date => setDob(date)}
+            placeholderText="Select a date"
+            showYearDropdown
+            dateFormatCalendar="MMMM"
+            yearDropdownItemNumber={250}
+            scrollableYearDropdown
+        />
+      
+        <button type='button' onClick={() => handleBirth()}>Update Birth</button>
+        <p>{message}</p>
+    </fieldset>    
     )
-}
+};
 
-const DeathForm = ({ dod, setDod,  selectedPerson  }) => {
+const DeathForm = ({ dod, setDod, selectedPerson }) => {
     const [message, setMessage] = useState('');
-    const handleDeath = () => {
-        console.log('this death has not been handled')
+    const [loading, setLoading] = useState(false)
+    const [resObj, setResObj] = useState(null)
+      
+    const handleDeath = async () => {
+        try {
+            setLoading(false)
+            console.log(selectedPerson._id)
+            const dateISO = dod.toISOString()
+            const res = await axios({
+                method: 'put',
+                url: `${apiBaseUrl}/dod/${selectedPerson._id}`,
+                data: {
+                        dod                            
+                },
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+           setMessage('Update date of death requst sent')    
+           setResObj(res)  
 
-    }
+        } catch (error) {
+            if (error.response) {
+              // API returned an error response
+              const errorResponse = error.response;
+              if (errorResponse.status === 401) {
+                // Unauthorized, token might be expired or invalid
+                setMessage('Unauthorized. Please log in again.');
+              } else if (errorResponse.status === 404) {
+                // Resource not found
+                setMessage('Resource not found. Please check the selected person ID.');
+              } else {
+                // Other API error
+                setMessage(`API error: ${errorResponse.statusText}`);
+              }
+            } else if (error.request) {
+              // No response was received
+              setMessage('No response received from the server. Check your network connection.');
+            } else {
+              // Something went wrong with the request
+              setMessage('An error occurred while sending the request. Please try again later.');
+            }
+          }     
+    };
 
+    useEffect(() => {
+        if (resObj) {
+            setMessage(resObj.data.message)
+        }        
+      }, [resObj])
+  
     return (
-        <fieldset>
-
-            <legend>Death</legend>            
-            <label htmlFor="dodInput">Date of death</label>
-            <input 
-                type="text"
-                id="dodInput"
-                value={dod}
-                onChange={(e) => setDod(e.target.value)}
-                placeholder='YYYY-MM-DD'
-            />           
-            <button  type='button' onClick={() => handleDeath()}>Add Event</button>
-            <p>{message}</p>
-        
-        </fieldset>
-    )
-}
-
+      <fieldset>
+        <legend>Death</legend>
+        <label htmlFor="dodInput">Date of death</label>       
+        <DatePicker
+          selected={dod}
+          onChange={date => setDod(date)}
+          placeholderText="Select a date"
+          showYearDropdown
+          dateFormatCalendar="MMMM"
+          yearDropdownItemNumber={250}
+          scrollableYearDropdown
+        />
+        <button type='button' onClick={() => handleDeath()}>Add Event</button>
+        <p>{message}</p>
+      </fieldset>
+    );
+  };
 
 const EventsForm = ({ events, setEvents,  selectedPerson }) => {
     const [message, setMessage] = useState('');
@@ -67,7 +145,7 @@ const EventsForm = ({ events, setEvents,  selectedPerson }) => {
             return;
         }
         if (!validateDate(eventDate)) {
-            setMessage('Invalid date format. Please use YYYY-MM-DD.');
+            setMessage('Invalid date format.  Please use MM-DD-YYYY.');
             return;
         }
 
@@ -83,32 +161,6 @@ const EventsForm = ({ events, setEvents,  selectedPerson }) => {
 
    
     };
-
-    // const updateDBEvents = async () => {
-    //     console.log('id:', selectedPerson._id)
-    //     console.log('events:', events)
-    //     axios({
-    //         url: `${apiBaseUrl}/events/${selectedPerson._id}`,
-    //         method: 'PUT',
-    //         headers: {
-    //             Authorization: `Bearer ${token}`
-    //         },
-    //         params: {
-    //             events: events,
-    //             id: selectedPerson._id
-    //         },
-    //     })
-    //     .then((res) => { 
-    //         if (res.status === 200) {
-    //             setMessage(`Success updating events`);
-    //         } else {
-    //             setMessage('Error updating events');
-    //         }
-    //     })
-    //     .catch((err) => {
-    //         setMessage(`Error: ${err.message}`);
-    //     })
-    // }
 
     const updateDBEvents = async () => {
         try {            
@@ -149,12 +201,14 @@ const EventsForm = ({ events, setEvents,  selectedPerson }) => {
                 onChange={(e) => setEventDesc(e.target.value)}
             />
             <label htmlFor="eventDateInput">Date of event</label>
-            <input
-                type="text"
-                id="eventDateInput"
-                value={eventDate}
-                onChange={(e) => setEventDate(e.target.value)}
-                placeholder="YYYY-MM-DD"
+            <DatePicker
+                selected={eventDate}
+                onChange={date => setEventDate(date)}
+                placeholderText="Select a date"
+                showYearDropdown
+                dateFormatCalendar="MMMM"
+                yearDropdownItemNumber={250}
+                scrollableYearDropdown
             />
             <button type="button" onClick={() => handleNewEvent()}>Add Event</button>
             <p>{message}</p>

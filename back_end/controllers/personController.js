@@ -105,7 +105,8 @@ exports.all_persons = async (req, res) => {
 
 exports.update_dob = async (req, res) => {
     try {
-        const { id, dob } = req.body;
+        
+        const { id, dob } = req.body.params;
         const personToUpdate = await Person.findById(id);
 
         if (!personToUpdate) {
@@ -131,7 +132,9 @@ exports.update_dob = async (req, res) => {
 
 exports.update_dod = async (req, res) => {
     try {
-        const { id, dod } = req.body;
+        const { id } = req.params
+        const { dod } = req.body;
+        console.log(id, dod)
         const personToUpdate = await Person.findById(id);
         if (!personToUpdate) {
             return res.status(404).json({ message: 'Person not found' });
@@ -147,7 +150,7 @@ exports.update_dod = async (req, res) => {
 
     } catch (error) {
         if (error.name === 'ValidationError') {
-            return res.status(400).json({ message: 'Invalid date format YYYY-MM-DD' });
+            return res.status(400).json({ message: 'Invalid date format MM/DD/YYYY' });
         }
 
         res.status(500).json({ message: `Error updating dod: ${error.message}` });
@@ -157,11 +160,9 @@ exports.update_dod = async (req, res) => {
 exports.update_events = async (req, res) => {
     
     try {
-        console.log('params:', req.params);
-        console.log('events:', req.body.events);
         const { id } = req.params;
         const events = req.body.events;
-        console.log(id, events);
+
         const personToUpdate = await Person.findById(id);
         if (!personToUpdate) {
             return res.status(404).json({ message: 'Person not found' });
