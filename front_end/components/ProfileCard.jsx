@@ -18,9 +18,11 @@ export const ProfileCard = ({ person, setSelectedPerson }) => {
             <button type='button' onClick={() => setDetailsVis(!detailsVis)}>{detailsVis ? 'Hide Details' : 'View Details'}</button>
             {detailsVis && (
                 <>
+                    <p>Born {formatDate(person.dob)}</p>
                     {person.events && person.events.map((event, index) => (
-                        <p key={index}>{formatDate(event.date)} - {event.description} </p>
+                        <p key={index}>{event.description} - {formatDate(event.date)}  </p>
                     ))}
+                    <p> Died {formatDate(person.dod)}</p>
 
                     {/* {person.children && person.children.map((child) => (
                         <p key={child._id}>{child.name.first} {child.name.middle} {child.name.last}</p>
